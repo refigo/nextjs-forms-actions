@@ -1,0 +1,67 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// User model with required fields
+model User {
+  id        String   @id @default(uuid())
+  username  String   @unique
+  password  String
+  email     String   @unique
+  bio       String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  tweets Tweet[]
+  likes  Like[]
+
+  @@map("users")
+}
+
+// Tweet model with required fields
+model Tweet {
+  id        String   @id @default(uuid())
+  tweet     String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // User relation
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Tweet likes
+  likes Like[]
+
+  @@index([userId])
+  @@map("tweets")
+}
+
+// Like model with required fields
+model Like {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // User relation
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Tweet relation
+  tweetId String @map("tweet_id")
+  tweet   Tweet  @relation(fields: [tweetId], references: [id], onDelete: Cascade)
+
+  // Ensure a user can like a tweet only once
+  @@unique([userId, tweetId])
+  @@index([userId])
+  @@index([tweetId])
+  @@map("likes")
+}

@@ -56,18 +56,33 @@ export default function Home() {
       password?: string;
     } = {};
     
+    // Email validation
     if (!emailInput.value.trim()) {
       errors.email = '이메일을 입력해주세요.';
       hasErrors = true;
-    }
-    
-    if (!usernameInput.value.trim()) {
-      errors.username = '사용자 이름을 입력해주세요.';
+    } else if (!emailInput.value.trim().endsWith('@zod.com')) {
+      errors.email = '오직 @zod.com 도메인의 이메일만 허용됩니다.';
       hasErrors = true;
     }
     
+    // Username validation
+    if (!usernameInput.value.trim()) {
+      errors.username = '사용자 이름을 입력해주세요.';
+      hasErrors = true;
+    } else if (usernameInput.value.trim().length < 5) {
+      errors.username = '사용자 이름은 최소 5글자 이상이어야 합니다.';
+      hasErrors = true;
+    }
+    
+    // Password validation
     if (!passwordInput.value.trim()) {
       errors.password = '비밀번호를 입력해주세요.';
+      hasErrors = true;
+    } else if (passwordInput.value.trim().length < 10) {
+      errors.password = '비밀번호는 최소 10글자 이상이어야 합니다.';
+      hasErrors = true;
+    } else if (!/(?=.*\d)/.test(passwordInput.value)) {
+      errors.password = '비밀번호는 최소 1개 이상의 숫자를 포함해야 합니다.';
       hasErrors = true;
     }
     
@@ -92,36 +107,42 @@ export default function Home() {
             </div>
           )}
           
-          <Input 
-            name="email" 
-            type="email" 
-            placeholder="Email" 
-            icon={<EmailIcon />}
-            error={clientErrors.email || state.errors?.email}
-            value={state.values?.email}
-            required
-            disabled={useFormStatus().pending}
-          />
+          <div>
+            <Input 
+              name="email" 
+              type="email" 
+              placeholder="Email" 
+              icon={<EmailIcon />}
+              error={clientErrors.email || state.errors?.email}
+              value={state.values?.email}
+              required
+              disabled={useFormStatus().pending}
+            />
+          </div>
           
-          <Input 
-            name="username" 
-            placeholder="Username" 
-            icon={<UserIcon />}
-            error={clientErrors.username || state.errors?.username}
-            value={state.values?.username}
-            required
-            disabled={useFormStatus().pending}
-          />
+          <div>
+            <Input 
+              name="username" 
+              placeholder="Username" 
+              icon={<UserIcon />}
+              error={clientErrors.username || state.errors?.username}
+              value={state.values?.username}
+              required
+              disabled={useFormStatus().pending}
+            />
+          </div>
           
-          <Input 
-            name="password" 
-            type="password" 
-            placeholder="Password" 
-            icon={<LockIcon />}
-            error={clientErrors.password || state.errors?.password}
-            required
-            disabled={useFormStatus().pending}
-          />
+          <div>
+            <Input 
+              name="password" 
+              type="password" 
+              placeholder="Password" 
+              icon={<LockIcon />}
+              error={clientErrors.password || state.errors?.password}
+              required
+              disabled={useFormStatus().pending}
+            />
+          </div>
           
           <div className="mt-6">
             <SubmitButton />

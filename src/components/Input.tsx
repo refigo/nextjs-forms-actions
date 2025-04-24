@@ -34,7 +34,7 @@ export default function Input({
             error ? 'border-red-500' : 'border-gray-200'
           } ${
             icon ? 'pl-10' : 'pl-4'
-          } outline-none focus:ring-2 focus:ring-pink-500 transition-all disabled:bg-gray-100 disabled:cursor-not-allowed`}
+          } outline-none focus:ring-2 focus:ring-pink-500 transition-all disabled:bg-gray-100 disabled:cursor-not-allowed text-black placeholder:text-gray-500`}
         />
       </div>
       {error && <p className="text-red-500 text-sm mt-1">{error}</p>}

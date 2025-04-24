@@ -7,6 +7,8 @@ interface InputProps {
   error?: string;
   icon?: ReactNode;
   disabled?: boolean;
+  value?: string;
+  required?: boolean;
 }
 
 export default function Input({
@@ -16,6 +18,8 @@ export default function Input({
   error,
   icon,
   disabled = false,
+  value = '',
+  required = false,
 }: InputProps) {
   return (
     <div className="w-full mb-4">
@@ -30,6 +34,8 @@ export default function Input({
           type={type}
           placeholder={placeholder}
           disabled={disabled}
+          defaultValue={value}
+          required={required}
           className={`w-full py-3 px-4 rounded-full border ${
             error ? 'border-red-500' : 'border-gray-200'
           } ${

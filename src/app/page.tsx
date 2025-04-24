@@ -6,6 +6,7 @@ import { loginAction, FormState } from './actions';
 import Input from '@/components/Input';
 import Button from '@/components/Button';
 import { EmailIcon, UserIcon, LockIcon, FireIcon } from '@/components/Icons';
+import { FormEvent, useState } from 'react';
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -21,9 +22,61 @@ export default function Home() {
   const initialState: FormState = {
     success: false,
     message: '',
+    errors: {},
+    values: {
+      email: '',
+      username: '',
+      password: ''
+    }
   };
 
   const [state, formAction] = useActionState(loginAction, initialState);
+  const [clientErrors, setClientErrors] = useState<{
+    email?: string;
+    username?: string;
+    password?: string;
+  }>({});
+
+  // Client-side validation handler
+  const validateAndSubmit = (event: FormEvent<HTMLFormElement>) => {
+    // Reset client errors
+    setClientErrors({});
+    
+    // Get form elements
+    const form = event.currentTarget;
+    const emailInput = form.elements.namedItem('email') as HTMLInputElement;
+    const usernameInput = form.elements.namedItem('username') as HTMLInputElement;
+    const passwordInput = form.elements.namedItem('password') as HTMLInputElement;
+    
+    // Validate each field
+    let hasErrors = false;
+    const errors: {
+      email?: string;
+      username?: string;
+      password?: string;
+    } = {};
+    
+    if (!emailInput.value.trim()) {
+      errors.email = '이메일을 입력해주세요.';
+      hasErrors = true;
+    }
+    
+    if (!usernameInput.value.trim()) {
+      errors.username = '사용자 이름을 입력해주세요.';
+      hasErrors = true;
+    }
+    
+    if (!passwordInput.value.trim()) {
+      errors.password = '비밀번호를 입력해주세요.';
+      hasErrors = true;
+    }
+    
+    // If there are errors, prevent form submission and show client-side errors
+    if (hasErrors) {
+      event.preventDefault();
+      setClientErrors(errors);
+    }
+  };
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-gray-50">
@@ -32,9 +85,9 @@ export default function Home() {
           <FireIcon />
         </div>
         
-        <form action={formAction} className="mt-8 space-y-6">
-          {state.message && (
-            <div className={`p-3 rounded-md ${state.success ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+        <form action={formAction} onSubmit={validateAndSubmit} className="mt-8 space-y-6" noValidate>
+          {state.success && state.message && (
+            <div className="p-3 rounded-md bg-green-100 text-green-800">
               {state.message}
             </div>
           )}
@@ -44,6 +97,9 @@ export default function Home() {
             type="email" 
             placeholder="Email" 
             icon={<EmailIcon />}
+            error={clientErrors.email || state.errors?.email}
+            value={state.values?.email}
+            required
             disabled={useFormStatus().pending}
           />
           
@@ -51,6 +107,9 @@ export default function Home() {
             name="username" 
             placeholder="Username" 
             icon={<UserIcon />}
+            error={clientErrors.username || state.errors?.username}
+            value={state.values?.username}
+            required
             disabled={useFormStatus().pending}
           />
           
@@ -59,6 +118,8 @@ export default function Home() {
             type="password" 
             placeholder="Password" 
             icon={<LockIcon />}
+            error={clientErrors.password || state.errors?.password}
+            required
             disabled={useFormStatus().pending}
           />
           

@@ -1,5 +1,6 @@
 'use server';
 
+import { redirect } from 'next/navigation';
 import { z } from 'zod';
 import { db } from '@/lib/db';
 import { hashPassword, verifyPassword } from '@/lib/password';
@@ -13,145 +14,160 @@ export interface AuthFormState {
     email?: string;
     username?: string;
     password?: string;
+    bio?: string;
   };
   values?: {
     email?: string;
     username?: string;
     password?: string;
+    bio?: string;
   };
 }
 
 // Update the interface for login form state
-interface LoginFormState extends AuthFormState {
+export interface LoginFormState extends AuthFormState {
   values: {
     email: string;
     password: string;
   };
 }
 
-// Sign-up form schema
+// Update the interface for signup form state
+export interface SignupFormState extends AuthFormState {
+  values: {
+    email: string;
+    username: string;
+    password: string;
+    bio: string;
+  };
+}
+
+// Sign-up form schema without async refinements
 const signupSchema = z.object({
   email: z.string()
-    .min(1, { message: '이메일을 입력해주세요.' })
-    .email({ message: '유효한 이메일 주소를 입력해주세요.' })
-    .refine((email) => email.endsWith('@zod.com'), {
-      message: '오직 @zod.com 도메인의 이메일만 허용됩니다.'
-    }),
+    .email({ message: '올바른 이메일 형식이 아닙니다.' })
+    .endsWith('@zod.com', { message: '오직 @zod.com 도메인의 이메일만 허용됩니다.' }),
   username: z.string()
     .min(5, { message: '사용자 이름은 최소 5글자 이상이어야 합니다.' }),
   password: z.string()
     .min(10, { message: '비밀번호는 최소 10글자 이상이어야 합니다.' })
     .refine((password) => /(?=.*\d)/.test(password), {
       message: '비밀번호는 최소 1개 이상의 숫자를 포함해야 합니다.'
-    })
-})
-.superRefine(async ({ email, username }, ctx) => {
-  // Check if email already exists
-  const existingUserByEmail = await db.user.findUnique({ where: { email } });
-  if (existingUserByEmail) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: '이미 사용 중인 이메일입니다.',
-      path: ['email']
-    });
-  }
-
-  // Check if username already exists
-  const existingUserByUsername = await db.user.findUnique({ where: { username } });
-  if (existingUserByUsername) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: '이미 사용 중인 사용자 이름입니다.',
-      path: ['username']
-    });
-  }
+    }),
+  bio: z.string().optional(),
 });
 
 // Login form schema
 const loginSchema = z.object({
   email: z.string()
-    .min(1, { message: '이메일을 입력해주세요.' })
-    .email({ message: '유효한 이메일 주소를 입력해주세요.' }),
+    .email({ message: '올바른 이메일 형식이 아닙니다.' })
+    .endsWith('@zod.com', { message: '오직 @zod.com 도메인의 이메일만 허용됩니다.' }),
   password: z.string()
-    .min(1, { message: '비밀번호를 입력해주세요.' })
+    .min(10, { message: '비밀번호는 최소 10글자 이상이어야 합니다.' })
+    .refine((password) => /(?=.*\d)/.test(password), {
+      message: '비밀번호는 최소 1개 이상의 숫자를 포함해야 합니다.'
+    })
 });
 
 // Sign-up action
-export async function signupAction(prevState: AuthFormState, formData: FormData): Promise<AuthFormState> {
-  // Simulate server processing time
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  
-  const email = formData.get('email') as string;
-  const username = formData.get('username') as string;
-  const password = formData.get('password') as string;
-  
-  // Store the submitted values
-  const values = {
-    email,
-    username,
-    password: '' // Don't send the password back for security
+export async function signupAction(prevState: SignupFormState, formData: FormData): Promise<SignupFormState> {
+  // Reset the state
+  const state: SignupFormState = {
+    success: false,
+    message: '',
+    errors: {},
+    values: {
+      email: formData.get('email') as string || '',
+      username: formData.get('username') as string || '',
+      password: formData.get('password') as string || '',
+      bio: formData.get('bio') as string || '',
+    }
   };
-  
+
   try {
-    // Validate using Zod
-    const validationResult = await signupSchema.safeParseAsync({
-      email,
-      username,
-      password
+    // Use regular safeParse since we removed async refinements
+    const validatedFields = signupSchema.safeParse({
+      email: state.values.email,
+      username: state.values.username,
+      password: state.values.password,
+      bio: state.values.bio,
     });
-    
+
     // If validation fails, return errors
-    if (!validationResult.success) {
-      const zodErrors = validationResult.error.flatten().fieldErrors;
-      
+    if (!validatedFields.success) {
       return {
-        success: false,
-        message: '',
-        errors: {
-          email: zodErrors.email?.[0],
-          username: zodErrors.username?.[0],
-          password: zodErrors.password?.[0]
-        },
-        values
+        ...state,
+        errors: formatZodErrors(validatedFields.error),
       };
     }
-    
+
+    // Check if the email is already in use
+    const existingUserByEmail = await db.user.findUnique({
+      where: { email: validatedFields.data.email },
+    });
+
+    if (existingUserByEmail) {
+      return {
+        ...state,
+        errors: {
+          email: '이미 사용 중인 이메일입니다.',
+        },
+      };
+    }
+
+    // Check if the username is already in use
+    const existingUserByUsername = await db.user.findUnique({
+      where: { username: validatedFields.data.username },
+    });
+
+    if (existingUserByUsername) {
+      return {
+        ...state,
+        errors: {
+          username: '이미 사용 중인 사용자 이름입니다.',
+        },
+      };
+    }
+
     // Hash the password
-    const hashedPassword = await hashPassword(password);
-    
-    // Create the user
+    const hashedPassword = await hashPassword(validatedFields.data.password);
+
+    // Create the user in the database
     const user = await db.user.create({
       data: {
-        email,
-        username,
+        email: validatedFields.data.email,
+        username: validatedFields.data.username,
         password: hashedPassword,
-        bio: '',
-      }
+        bio: validatedFields.data.bio || '',
+      },
     });
-    
-    // Set user session
+
+    console.log('User created successfully:', user.id);
+
+    // Set session data using our updated session module
     await setSession({
       isLoggedIn: true,
       userId: user.id,
       username: user.username,
       email: user.email,
     });
-    
+
+    // Return success
     return {
+      ...state,
       success: true,
-      message: '계정이 성공적으로 생성되었습니다!',
+      message: '회원가입이 완료되었습니다. 리디렉션 중...',
       values: {
-        email: '',
-        username: '',
-        password: ''
+        ...state.values,
+        password: '',  // Clear password for security
       }
     };
   } catch (error) {
-    console.error('Sign-up error:', error);
+    console.error('Signup error:', error);
+    
     return {
-      success: false,
-      message: '계정 생성 중 오류가 발생했습니다. 다시 시도해 주세요.',
-      values
+      ...state,
+      message: '회원가입 중 오류가 발생했습니다. 다시 시도해 주세요.',
     };
   }
 }

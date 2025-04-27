@@ -2,7 +2,7 @@
 
 import { useFormStatus } from 'react-dom';
 import { useActionState } from 'react';
-import { signupAction, AuthFormState } from '../actions/auth';
+import { signupAction, SignupFormState } from '../actions/auth';
 import Link from 'next/link';
 import Input from '@/components/Input';
 import Button from '@/components/Button';
@@ -23,14 +23,17 @@ function SubmitButton() {
 
 export default function CreateAccountPage() {
   const router = useRouter();
-  const initialState: AuthFormState = {
+  
+  // Define initial state
+  const initialState: SignupFormState = {
     success: false,
     message: '',
     errors: {},
     values: {
       email: '',
       username: '',
-      password: ''
+      password: '',
+      bio: ''
     }
   };
 
@@ -39,6 +42,7 @@ export default function CreateAccountPage() {
     email?: string;
     username?: string;
     password?: string;
+    bio?: string;
   }>({});
 
   // Use useEffect for navigation after successful signup
@@ -65,6 +69,7 @@ export default function CreateAccountPage() {
       email?: string;
       username?: string;
       password?: string;
+      bio?: string;
     } = {};
     
     // Email validation

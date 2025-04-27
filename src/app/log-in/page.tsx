@@ -2,13 +2,13 @@
 
 import { useFormStatus } from 'react-dom';
 import { useActionState } from 'react';
-import { loginAction, AuthFormState } from '../actions/auth';
+import { loginAction, LoginFormState } from '../actions/auth';
 import Link from 'next/link';
 import Input from '@/components/Input';
 import Button from '@/components/Button';
 import { EmailIcon, LockIcon } from '@/components/Icons';
 import FormContainer from '@/components/FormContainer';
-import { FormEvent, useState } from 'react';
+import { FormEvent, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 function SubmitButton() {
@@ -23,7 +23,9 @@ function SubmitButton() {
 
 export default function LoginPage() {
   const router = useRouter();
-  const initialState: AuthFormState = {
+  
+  // Initial state for the login form
+  const initialState: LoginFormState = {
     success: false,
     message: '',
     errors: {},
@@ -32,7 +34,7 @@ export default function LoginPage() {
       password: ''
     }
   };
-
+  
   const [state, formAction] = useActionState(loginAction, initialState);
   const [clientErrors, setClientErrors] = useState<{
     email?: string;
@@ -75,11 +77,12 @@ export default function LoginPage() {
     }
   };
 
-  // If login is successful, redirect to profile page
-  if (state.success) {
-    router.push('/profile');
-    return null;
-  }
+  // Redirect to profile page after successful login
+  useEffect(() => {
+    if (state.success) {
+      router.push('/profile');
+    }
+  }, [state.success, router]);
 
   return (
     <FormContainer title="로그인">

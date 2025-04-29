@@ -1,20 +1,17 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import Button from '@/components/Button';
 import { TweetWithUser } from '@/components/TweetCard';
 
-interface TweetDetailProps {
-  params: {
-    id: string;
-  };
-}
+export default function TweetDetailPage() {
+  const params = useParams();
+  const tweetId = params.id as string;
 
-export default function TweetDetailPage({ params }: TweetDetailProps) {
   const router = useRouter();
   const [tweet, setTweet] = useState<TweetWithUser | null>(null);
   const [loading, setLoading] = useState(true);
@@ -24,7 +21,7 @@ export default function TweetDetailPage({ params }: TweetDetailProps) {
     async function fetchTweet() {
       try {
         setLoading(true);
-        const response = await fetch(`/api/tweets/${params.id}`);
+        const response = await fetch(`/api/tweets/${tweetId}`);
         
         if (!response.ok) {
           if (response.status === 404) {
@@ -44,7 +41,7 @@ export default function TweetDetailPage({ params }: TweetDetailProps) {
     }
     
     fetchTweet();
-  }, [params.id]);
+  }, [tweetId]);
 
   if (loading) {
     return (
@@ -120,10 +117,8 @@ export default function TweetDetailPage({ params }: TweetDetailProps) {
     );
   }
 
-  // 날짜 형식이 문자열인 경우 Date 객체로 변환
   const createdAt = new Date(tweet.createdAt);
   
-  // 얼마나 전에 작성되었는지 표시 (예: "3시간 전", "2일 전")
   const timeAgo = formatDistanceToNow(createdAt, { 
     addSuffix: true,
     locale: ko 
@@ -165,7 +160,6 @@ export default function TweetDetailPage({ params }: TweetDetailProps) {
           </div>
         </div>
         
-        {/* 추후 답글 기능을 위한 섹션 */}
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <h3 className="text-lg font-medium text-gray-800 mb-4">답글</h3>
           <p className="text-gray-500 text-center py-4">아직 답글이 없습니다.</p>

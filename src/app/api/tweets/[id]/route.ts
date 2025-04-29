@@ -19,7 +19,9 @@ export async function GET(request: NextRequest, { params }: Params) {
       );
     }
 
-    const { id } = params;
+    // params 객체 await 처리
+    const resolvedParams = await params;
+    const { id } = resolvedParams;
     
     // 트윗 조회 (사용자 정보 포함)
     const tweet = await db.tweet.findUnique({

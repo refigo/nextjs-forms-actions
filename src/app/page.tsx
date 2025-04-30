@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import TweetCard, { TweetWithUser } from '@/components/TweetCard';
-import TweetForm from '@/components/TweetForm';
+import AddTweet from '@/components/AddTweet';
 import Button from '@/components/Button';
 import { FireIcon } from '@/components/Icons';
 
@@ -138,7 +138,7 @@ export default function Home() {
         </div>
 
         {/* 트윗 작성 폼 */}
-        <TweetForm />
+        <AddTweet />
 
         {tweets.length === 0 ? (
           <div className="text-center py-10 bg-white rounded-lg border border-gray-200">

@@ -19,9 +19,14 @@ export async function GET(request: NextRequest, { params }: Params) {
       );
     }
 
+    // 로깅 추가
+    console.log('API 요청 받음:', params);
+    
     // params 객체 await 처리
     const resolvedParams = await params;
     const { id } = resolvedParams;
+    
+    console.log('트윗 ID:', id);
     
     // 트윗 조회 (사용자 정보 포함)
     const tweet = await db.tweet.findUnique({
@@ -43,13 +48,16 @@ export async function GET(request: NextRequest, { params }: Params) {
     });
 
     if (!tweet) {
+      console.log('트윗을 찾을 수 없음:', id);
       return NextResponse.json(
         { error: 'Tweet not found' },
         { status: 404 }
       );
     }
 
-    // 현재, 사용자가 좋아요를 눌렀는지 확인
+    console.log('트윗 찾음:', tweet);
+
+    // 현재 사용자가 좋아요를 눌렀는지 확인
     const like = await db.like.findUnique({
       where: {
         userId_tweetId: {
@@ -77,11 +85,18 @@ export async function GET(request: NextRequest, { params }: Params) {
       }
     });
 
-    return NextResponse.json({ 
+    console.log('응답 개수:', responses.length);
+    
+    // 명확한 응답 구조
+    const responseData = {
       tweet,
       isLiked: !!like,
       responses
-    });
+    };
+    
+    console.log('응답 데이터 보냄');
+    
+    return NextResponse.json(responseData);
   } catch (error) {
     console.error('Error fetching tweet:', error);
     return NextResponse.json(

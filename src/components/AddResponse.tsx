@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useActionState } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { useActionState } from 'react'; 
 import { useFormStatus } from 'react-dom';
 import { createResponseAction, ResponseFormState } from '@/app/actions/tweets';
 import Button from '@/components/Button';
@@ -32,27 +32,47 @@ export default function AddResponse({ tweetId, onSuccess, onOptimisticResponse }
     text: ''
   };
   
-  // useActionState 훅을 사용하여 폼 상태 관리
+  // useActionState 훅을 사용하여 폼 상태 관리 
   const [state, formAction] = useActionState(createResponseAction, initialState);
   
   // 로컬 상태로 텍스트 입력값 관리
   const [responseText, setResponseText] = useState('');
   const [charCount, setCharCount] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
-  // 서버 액션 성공 시 입력값 초기화 및 콜백 호출
+  // 제출 처리 완료 여부를 추적
+  const successHandled = useRef(false);
+  
+  // 서버 액션 성공 시 처리
   useEffect(() => {
-    if (state.success) {
+    // 이미 처리된 성공 응답은 다시 처리하지 않음
+    if (state.success && !successHandled.current) {
+      // 성공 처리를 했음을 표시
+      successHandled.current = true;
+      
+      // 폼 초기화
       setResponseText('');
       setCharCount(0);
+      setIsSubmitting(false);
+      
+      // 성공 콜백 호출 - 단 한 번만
       if (onSuccess) {
-        onSuccess(state);
+        // setTimeout을 사용하여 React 렌더링 사이클과 분리
+        setTimeout(() => {
+          onSuccess(state);
+        }, 0);
       }
-    } else if (state.text) {
-      // 유효성 검사 실패 시 서버에서 전달한 값으로 복원
-      setResponseText(state.text);
-      setCharCount(state.text.length);
+    } else if (state.error) {
+      // 에러 발생 시 제출 상태 초기화
+      successHandled.current = false;
+      setIsSubmitting(false);
     }
-  }, [state.success, state.text, onSuccess]);
+  }, [state, onSuccess]);
+  
+  // 사용자 입력마다 성공 처리 플래그 초기화
+  useEffect(() => {
+    successHandled.current = false;
+  }, [responseText]);
   
   // 텍스트 입력 핸들러
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -61,15 +81,20 @@ export default function AddResponse({ tweetId, onSuccess, onOptimisticResponse }
     setCharCount(value.length);
   };
 
-  // 폼 제출 핸들러 - 서버 액션에 현재 입력값 전달
+  // 폼 제출 핸들러
   const handleSubmit = (formData: FormData) => {
+    // 입력값이 비어있거나 이미 제출 중이면 제출하지 않음
+    if (!responseText.trim() || isSubmitting) return;
+    
+    // 낙관적 UI 업데이트 실행 (한 번만)
+    if (onOptimisticResponse && !isSubmitting) {
+      onOptimisticResponse(responseText);
+      setIsSubmitting(true);
+    }
+    
+    // 서버 액션에 데이터 전달
     formData.set('text', responseText);
     formData.set('tweetId', tweetId);
-    
-    // 낙관적 응답 업데이트를 위한 콜백 호출
-    if (onOptimisticResponse) {
-      onOptimisticResponse(responseText);
-    }
     
     return formAction(formData);
   };
@@ -99,6 +124,7 @@ export default function AddResponse({ tweetId, onSuccess, onOptimisticResponse }
             maxLength={280}
             onChange={handleTextChange}
             value={responseText}
+            disabled={isSubmitting}
             required
           />
           <div className="flex justify-end mt-2">

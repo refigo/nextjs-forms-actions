@@ -137,8 +137,9 @@ export async function likeTweetAction(tweetId: string): Promise<LikeState> {
         where: { id: existingLike.id }
       });
 
-      // 캐시 갱신
+      // 캐시 갱신 - 경로와 API 경로 모두 갱신
       revalidatePath(`/tweets/${tweetId}`);
+      revalidatePath(`/api/tweets/${tweetId}`);
 
       return {
         success: true,
@@ -154,8 +155,9 @@ export async function likeTweetAction(tweetId: string): Promise<LikeState> {
       }
     });
 
-    // 캐시 갱신
+    // 캐시 갱신 - 경로와 API 경로 모두 갱신
     revalidatePath(`/tweets/${tweetId}`);
+    revalidatePath(`/api/tweets/${tweetId}`);
 
     return {
       success: true,
@@ -220,8 +222,9 @@ export async function createResponseAction(prevState: ResponseFormState, formDat
       }
     });
 
-    // 캐시 갱신
+    // 캐시 갱신 - 경로와 API 경로 모두 갱신
     revalidatePath(`/tweets/${tweetId}`);
+    revalidatePath(`/api/tweets/${tweetId}`);
 
     return {
       success: true,

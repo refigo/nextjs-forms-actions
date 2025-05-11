@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import Button from '@/components/Button';
-import { TweetWithUser } from '@/components/TweetCard';
+// import { TweetWithUser } from '@/components/TweetCard';
 import AddResponse from '@/components/AddResponse';
 import ResponseCard, { ResponseWithUser } from '@/components/ResponseCard';
 import { likeTweetAction } from '@/app/actions/tweets';
@@ -44,7 +44,7 @@ export default function TweetDetailPage() {
   const [responseCount, setResponseCount] = useState(0);
   
   // 디버깅용 상태 추가
-  const [apiData, setApiData] = useState<any>(null);
+  const [apiData, setApiData] = useState<Record<string, unknown>>({});
   
   // 마운트된 상태를 추적하는 ref
   const isMountedRef = useRef(true);

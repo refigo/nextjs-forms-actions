@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Button from '@/components/Button';
 import { logoutAction } from '../actions/auth';
-import { db } from '@/lib/db';
+// import { db } from '@/lib/db';
 
 interface UserProfile {
   id: string;

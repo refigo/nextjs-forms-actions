@@ -2,10 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { getSession } from '@/lib/session';
 
-// Next.js 15에서는 도엄릭 세그먼트에 대한 타입을 인라인으로 직접 정의해야 함
+// Next.js 15 App Router에서는 다음과 같은 형식으로 라우트 함수를 정의해야 합니다
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
   try {
     // 로그인 확인
@@ -18,11 +18,10 @@ export async function GET(
     }
 
     // 로깅 추가
-    console.log('API 요청 받음:', params);
+    console.log('API 요청 받음:', context.params);
     
-    // params 객체 await 처리
-    const resolvedParams = await params;
-    const { id } = resolvedParams;
+    // 트윗 ID 가져오기
+    const { id } = context.params;
     
     console.log('트윗 ID:', id);
     

@@ -36,7 +36,9 @@ const eslintConfig = [
       // Prevent missing prop-types validation in React components
       "react/prop-types": "off",
       // Ignore NextJS specific routing behavior that causes false positives
-      "@next/next/no-html-link-for-pages": "off"
+      "@next/next/no-html-link-for-pages": "off",
+      // Allow var in global declarations, which is a valid use case
+      "no-var": "warn"
     }
   }
 ];

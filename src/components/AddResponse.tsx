@@ -17,9 +17,11 @@ function SubmitButton() {
   );
 }
 
+// Using ResponseFormState already imported above
+
 interface AddResponseProps {
   tweetId: string;
-  onSuccess?: (response: any) => void;
+  onSuccess?: (response: ResponseFormState) => void;
   onOptimisticResponse?: (text: string) => void;
 }
 

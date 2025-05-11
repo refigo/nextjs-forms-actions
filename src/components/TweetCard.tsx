@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+// useState is unused - removed import
 import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
 import { ko } from 'date-fns/locale';

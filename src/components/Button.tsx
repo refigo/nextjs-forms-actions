@@ -27,7 +27,7 @@ export default function Button<T extends ElementType = 'button'>({
       onClick={onClick}
       className={`w-full py-3 px-4 bg-pink-500 text-white font-medium rounded-full 
       hover:bg-pink-600 active:bg-pink-700 transition-colors
-      disabled:bg-pink-300 disabled:cursor-not-allowed ${className}`}
+      disabled:bg-pink-300 disabled:text-white/70 disabled:cursor-not-allowed ${className}`}
       {...rest}
     >
       {children}

@@ -2,11 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { getSession } from '@/lib/session';
 
-// Next.js 15 App Router에서는 다음과 같은 형식으로 라우트 함수를 정의해야 합니다
-export async function GET(
-  request: NextRequest,
-  context: { params: { id: string } }
-) {
+// Next.js 15에서는 API 라우트 핸들러 정의
+export async function GET(request: NextRequest) {
+  // URL에서 트윗 ID 추출
+  const pathParts = request.url.split('/');
+  const tweetId = pathParts[pathParts.length - 1] || '';
   try {
     // 로그인 확인
     const session = await getSession();
@@ -18,16 +18,19 @@ export async function GET(
     }
 
     // 로깅 추가
-    console.log('API 요청 받음:', context.params);
-    
-    // 트윗 ID 가져오기
-    const { id } = context.params;
-    
-    console.log('트윗 ID:', id);
+    console.log('API 요청 받음, 트윗 ID:', tweetId);
+
+    // ID가 없으면 오류 반환
+    if (!tweetId) {
+      return NextResponse.json(
+        { error: 'Tweet ID is required' },
+        { status: 400 }
+      );
+    }
     
     // 트윗 조회 (사용자 정보 포함)
     const tweet = await db.tweet.findUnique({
-      where: { id },
+      where: { id: tweetId },
       include: {
         user: {
           select: {
@@ -45,7 +48,7 @@ export async function GET(
     });
 
     if (!tweet) {
-      console.log('트윗을 찾을 수 없음:', id);
+      console.log('트윗을 찾을 수 없음:', tweetId);
       return NextResponse.json(
         { error: 'Tweet not found' },
         { status: 404 }
@@ -59,7 +62,7 @@ export async function GET(
       where: {
         userId_tweetId: {
           userId: session.userId!,
-          tweetId: id
+          tweetId: tweetId
         }
       }
     });
@@ -67,7 +70,7 @@ export async function GET(
     // 트윗에 대한 답글 조회
     const responses = await db.response.findMany({
       where: {
-        tweetId: id
+        tweetId: tweetId
       },
       include: {
         user: {

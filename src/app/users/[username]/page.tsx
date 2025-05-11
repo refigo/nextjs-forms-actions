@@ -7,7 +7,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import TweetCard, { TweetWithUser } from '@/components/TweetCard';
 import Button from '@/components/Button';
-import { getSession } from '@/lib/session';
+import { fetchSession } from '@/lib/clientSession';
 
 interface User {
   id: string;
@@ -77,8 +77,8 @@ export default function UserProfilePage() {
   // 현재 로그인한 사용자인지 확인
   const checkIfCurrentUser = async (profileUserId: string) => {
     try {
-      const session = await getSession();
-      if (session && session.user && session.user.id === profileUserId) {
+      const session = await fetchSession();
+      if (session && session.isLoggedIn && session.userId === profileUserId) {
         setIsCurrentUser(true);
       } else {
         setIsCurrentUser(false);
@@ -139,35 +139,60 @@ export default function UserProfilePage() {
   // 로딩 중 상태
   if (loading && !profileData) {
     return (
-      <div className="max-w-md mx-auto p-4 text-center">
-        <p>로딩 중...</p>
-      </div>
+      <main className="min-h-screen bg-gray-50 py-8 px-4">
+        <div className="max-w-2xl mx-auto">
+          <div className="mb-8 flex justify-between items-center">
+            <h1 className="text-3xl font-bold text-gray-800">사용자 프로필</h1>
+          </div>
+          <div className="space-y-4">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="border border-gray-200 rounded-lg p-4 animate-pulse">
+                <div className="flex items-center mb-4">
+                  <div className="w-10 h-10 rounded-full bg-gray-200 mr-3"></div>
+                  <div className="flex-1">
+                    <div className="h-4 bg-gray-200 rounded w-1/3 mb-2"></div>
+                    <div className="h-3 bg-gray-200 rounded w-1/4"></div>
+                  </div>
+                </div>
+                <div className="h-4 bg-gray-200 rounded w-full mb-2"></div>
+                <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </main>
     );
   }
 
   // 에러 상태
   if (error) {
     return (
-      <div className="max-w-md mx-auto p-4">
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-          {error}
+      <main className="min-h-screen bg-gray-50 py-8 px-4">
+        <div className="max-w-2xl mx-auto text-center">
+          <h1 className="text-2xl font-bold text-gray-800 mb-4">오류가 발생했습니다</h1>
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+            {error}
+          </div>
+          <Button onClick={() => router.push('/')} className="py-2 px-4 !w-auto">
+            홈으로 돌아가기
+          </Button>
         </div>
-        <Button onClick={() => router.push('/')} className="py-2 px-4">
-          홈으로 돌아가기
-        </Button>
-      </div>
+      </main>
     );
   }
 
   // 데이터가 없는 경우
   if (!profileData) {
     return (
-      <div className="max-w-md mx-auto p-4 text-center">
-        <p>사용자 정보를 불러올 수 없습니다.</p>
-        <Button onClick={() => router.push('/')} className="mt-4 py-2 px-4">
-          홈으로 돌아가기
-        </Button>
-      </div>
+      <main className="min-h-screen bg-gray-50 py-8 px-4">
+        <div className="max-w-2xl mx-auto text-center">
+          <h1 className="text-2xl font-bold text-gray-800 mb-4">사용자를 찾을 수 없습니다</h1>
+          <p className="text-gray-600 mb-6">사용자 정보를 불러올 수 없습니다.</p>
+          <Button onClick={() => router.push('/')} className="py-2 px-4 !w-auto">
+            홈으로 돌아가기
+          </Button>
+        </div>
+      </main>
     );
   }
 
@@ -175,44 +200,61 @@ export default function UserProfilePage() {
   const createdAt = new Date(user.createdAt);
 
   return (
-    <div className="max-w-md mx-auto p-4">
-      {/* 프로필 정보 */}
-      <div className="bg-white rounded-lg shadow p-6 mb-6">
-        <div className="flex justify-between items-start">
-          <h1 className="text-2xl font-bold mb-2">{user.username}</h1>
+    <main className="min-h-screen bg-gray-50 py-8 px-4">
+      <div className="max-w-2xl mx-auto">
+        <div className="mb-8 flex justify-between items-center">
+          <h1 className="text-3xl font-bold text-gray-800">{user.username}의 프로필</h1>
           {isCurrentUser && (
-            <Link href={`/users/${username}/edit`} className="text-blue-500 hover:underline">
+            <Link href={`/users/${username}/edit`} className="text-blue-500 hover:underline py-2 px-4 border border-blue-300 rounded-lg bg-blue-50">
               프로필 수정
             </Link>
           )}
         </div>
         
-        <p className="text-gray-600 mb-2">{user.email}</p>
-        
-        {user.bio ? (
-          <p className="mb-4">{user.bio}</p>
-        ) : (
-          <p className="text-gray-500 italic mb-4">자기소개가 없습니다.</p>
-        )}
-        
-        <p className="text-sm text-gray-500">
-          가입일: {formatDistanceToNow(createdAt, { addSuffix: true, locale: ko })}
-        </p>
-      </div>
-      
-      {/* 트윗 목록 */}
-      <h2 className="text-xl font-semibold mb-4">작성한 트윗 ({profileData.totalTweets})</h2>
-      
-      {tweets.length > 0 ? (
-        <div className="space-y-4">
-          {tweets.map((tweet) => (
-            <TweetCard key={tweet.id} tweet={tweet} />
-          ))}
-          <Pagination />
+        {/* 프로필 정보 */}
+        <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6 shadow-sm">
+          <div className="flex items-start gap-4 mb-4">
+            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center text-gray-500 text-xl font-bold">
+              {user.username.charAt(0).toUpperCase()}
+            </div>
+            
+            <div className="flex-1">
+              <h2 className="text-2xl font-semibold mb-1">{user.username}</h2>
+              <p className="text-gray-600 mb-2">{user.email}</p>
+              
+              {user.bio ? (
+                <p className="text-gray-800 mb-2">{user.bio}</p>
+              ) : (
+                <p className="text-gray-500 italic mb-2">자기소개가 없습니다.</p>
+              )}
+              
+              <p className="text-sm text-gray-500">
+                가입일: {formatDistanceToNow(createdAt, { addSuffix: true, locale: ko })}
+              </p>
+            </div>
+          </div>
         </div>
-      ) : (
-        <p className="text-center py-8 bg-gray-50 rounded">작성한 트윗이 없습니다.</p>
-      )}
-    </div>
+        
+        {/* 트윗 목록 */}
+        <div className="mb-6 flex justify-between items-center">
+          <h2 className="text-xl font-semibold">작성한 트윗 ({profileData.totalTweets})</h2>
+        </div>
+        
+        {tweets.length > 0 ? (
+          <div className="space-y-4">
+            {tweets.map((tweet) => (
+              <TweetCard key={tweet.id} tweet={tweet} />
+            ))}
+            <div className="mt-6">
+              <Pagination />
+            </div>
+          </div>
+        ) : (
+          <div className="bg-gray-100 border border-gray-200 rounded-lg p-6 text-center">
+            <p className="text-gray-600">작성한 트윗이 없습니다.</p>
+          </div>
+        )}
+      </div>
+    </main>
   );
 }

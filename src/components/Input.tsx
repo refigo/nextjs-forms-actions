@@ -2,6 +2,7 @@ import { ReactNode, ChangeEvent } from 'react';
 
 interface InputProps {
   name: string;
+  id?: string; // id 속성 추가
   type?: string;
   placeholder?: string;
   error?: string;
@@ -16,6 +17,7 @@ interface InputProps {
 
 export default function Input({
   name,
+  id,
   type = 'text',
   placeholder,
   error,
@@ -36,6 +38,7 @@ export default function Input({
           </div>
         )}
         <input
+          id={id || name}
           name={name}
           type={type}
           placeholder={placeholder}

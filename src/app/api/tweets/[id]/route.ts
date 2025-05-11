@@ -2,14 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { getSession } from '@/lib/session';
 
-// Next.js 15에서 요구하는 올바른 타입 정의
-type Params = {
-  params: {
-    id: string;
-  }
-}
-
-export async function GET(request: NextRequest, { params }: Params) {
+// Next.js 15에서는 도엄릭 세그먼트에 대한 타입을 인라인으로 직접 정의해야 함
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
     // 로그인 확인
     const session = await getSession();

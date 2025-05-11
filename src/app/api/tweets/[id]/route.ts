@@ -2,10 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { getSession } from '@/lib/session';
 
-interface Params {
+// Next.js 15에서 요구하는 올바른 타입 정의
+type Params = {
   params: {
     id: string;
-  };
+  }
 }
 
 export async function GET(request: NextRequest, { params }: Params) {

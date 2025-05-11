@@ -5,6 +5,7 @@ import { getSession } from '@/lib/session';
 // 페이지당 표시할 트윗 수
 const TWEETS_PER_PAGE = 10;
 
+// Next.js 15 표준 타입 명시 (파라미터 없는 경우에도 명시적으로 타입 선언)
 export async function GET(request: NextRequest) {
   try {
     // 로그인 확인

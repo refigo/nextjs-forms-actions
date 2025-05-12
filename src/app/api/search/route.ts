@@ -1,5 +1,5 @@
-// 단순하게 prisma 객체 사용
-import { prisma } from '@/lib/prisma-client';
+// 노마드코더 방식으로 구현된 db 객체 사용
+import { prisma } from '@/lib/db';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {

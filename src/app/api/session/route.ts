@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import { getSession } from '@/lib/session';
-import { cookies } from 'next/headers';
 
 export async function GET() {
   try {

@@ -1,10 +1,8 @@
 import { db } from '@/lib/db';
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { username: string } }
-) {
+// Next.js 15.3 표준 직접 파라미터를 객체로 받는 방식
+export async function GET(request: NextRequest, { params }: { params: { username: string } }) {
   try {
     const username = params.username;
     const { searchParams } = new URL(request.url);

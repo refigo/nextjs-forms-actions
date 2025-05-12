@@ -126,7 +126,6 @@ export async function updateProfileAction(prevState: ProfileFormState, formData:
   }
 
   // 비밀번호 변경 요청이 있는지 확인
-  let hashedPassword;
   if (currentPassword) {
     // 비밀번호 스키마 검증
     try {
@@ -162,8 +161,7 @@ export async function updateProfileAction(prevState: ProfileFormState, formData:
       };
     }
 
-    // 비밀번호 해싱
-    hashedPassword = await hashPassword(newPassword);
+    // 비밀번호 해싱은 이후 업데이트 시에 진행
   }
 
   try {

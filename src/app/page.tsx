@@ -162,7 +162,7 @@ export default function Home() {
                 ← 이전
               </Button>
               
-              <div className="text-gray-600">
+              <div className="text-gray-600 w-1/2 text-center">
                 페이지 {pagination.page} / {pagination.totalPages || 1}
               </div>
               

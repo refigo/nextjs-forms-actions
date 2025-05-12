@@ -79,7 +79,7 @@ export default function AddTweet() {
           <textarea
             name="tweet"
             placeholder="무슨 일이 일어나고 있나요?"
-            className="w-full border border-gray-300 rounded-lg p-3 h-24 resize-none focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+            className="text-black w-full border border-gray-300 rounded-lg p-3 h-24 resize-none focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
             maxLength={280}
             onChange={handleTextChange}
             value={tweetText}

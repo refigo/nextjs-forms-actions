@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-// Import from JS file - compatible with Next.js build process
-import { prisma } from '@/lib/prisma';
+// Import from stable singleton implementation
+import { prisma } from '@/lib/prisma-singleton';
 import { getSession } from '@/lib/session';
 import { z } from 'zod';
 

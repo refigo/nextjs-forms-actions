@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-// Import from JS file - compatible with Next.js build process
-import { prisma } from '@/lib/prisma';
+// Import from stable singleton implementation
+import { prisma } from '@/lib/prisma-singleton';
 import { getSession } from '@/lib/session';
 
 // Next.js 15에서는 API 라우트 핸들러 정의

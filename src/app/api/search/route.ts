@@ -1,5 +1,5 @@
-// Import from JS file - compatible with Next.js build process
-import { prisma } from '@/lib/prisma';
+// Import from stable singleton implementation
+import { prisma } from '@/lib/prisma-singleton';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {

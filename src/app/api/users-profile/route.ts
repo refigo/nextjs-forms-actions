@@ -1,5 +1,5 @@
-// Import from JS file - compatible with Next.js build process
-import { prisma } from '@/lib/prisma';
+// Import from stable singleton implementation
+import { prisma } from '@/lib/prisma-singleton';
 import { NextRequest, NextResponse } from 'next/server';
 
 // 사용자명으로 프로필 조회 API - ?username=xxx 형식으로 변경

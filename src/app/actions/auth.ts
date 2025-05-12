@@ -2,8 +2,8 @@
 
 // import { redirect } from 'next/navigation';
 import { z } from 'zod';
-// Import from JS file - compatible with Next.js build process
-import { prisma } from '@/lib/prisma';
+// Import from stable singleton implementation
+import { prisma } from '@/lib/prisma-singleton';
 import { hashPassword, verifyPassword } from '@/lib/password';
 import { setSession, logout } from '@/lib/session';
 

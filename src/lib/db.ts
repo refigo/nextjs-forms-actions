@@ -1,11 +1,24 @@
 import { PrismaClient } from "@prisma/client";
 
-// 노마드코더 방식의 Prisma 클라이언트 인스턴스 생성
-const prismaClient = new PrismaClient();
+// This is the approach that ensures Prisma works in all environments including Vercel
+function getClient() {
+  // In production, it's best to create a new instance
+  if (process.env.NODE_ENV === "production") {
+    return new PrismaClient();
+  }
+  
+  // In development, we'll use a global variable to prevent connection issues
+  if (!global.prisma) {
+    global.prisma = new PrismaClient();
+  }
+  
+  return global.prisma;
+}
 
-// 기존 코드와의 호환성을 위해 named export 제공
+// Initialize the client immediately
+const prismaClient = getClient();
+
+// Export in multiple ways for compatibility with existing code
 export const db = prismaClient;
 export const prisma = prismaClient;
-
-// 기본 export도 유지
 export default prismaClient;

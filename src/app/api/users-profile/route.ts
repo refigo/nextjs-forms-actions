@@ -1,5 +1,5 @@
-// Direct import of prisma client (server action safe)
-import { prisma } from '@/../../prisma/client';
+// Import from JS file - compatible with Next.js build process
+import { prisma } from '@/lib/prisma';
 import { NextRequest, NextResponse } from 'next/server';
 
 // 사용자명으로 프로필 조회 API - ?username=xxx 형식으로 변경

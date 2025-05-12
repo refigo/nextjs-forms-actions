@@ -2,8 +2,8 @@
 
 // import { redirect } from 'next/navigation';
 import { z } from 'zod';
-// Direct import of prisma client (server action safe)
-import { prisma } from '@/../../prisma/client';
+// Import from JS file - compatible with Next.js build process
+import { prisma } from '@/lib/prisma';
 import { hashPassword, verifyPassword } from '@/lib/password';
 import { setSession, logout } from '@/lib/session';
 

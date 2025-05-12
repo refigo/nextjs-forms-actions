@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-// Direct import of prisma client (server action safe)
-import { prisma } from '@/../../prisma/client';
+// Import from JS file - compatible with Next.js build process
+import { prisma } from '@/lib/prisma';
 import { getSession } from '@/lib/session';
 
 // Next.js 15에서는 API 라우트 핸들러 정의

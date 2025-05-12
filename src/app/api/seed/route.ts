@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-// Direct import of prisma client (server action safe)
-import { prisma } from '@/../../prisma/client';
+// Import from JS file - compatible with Next.js build process
+import { prisma } from '@/lib/prisma';
 
 export async function POST() {
   try {

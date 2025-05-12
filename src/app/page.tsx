@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import TweetCard, { TweetWithUser } from '@/components/TweetCard';
-import AddTweet from '@/components/AddTweet';
+// AddTweet 대신 AddTweetDirect 사용
+import AddTweetDirect from '@/components/AddTweetDirect';
 import Button from '@/components/Button';
 import { FireIcon } from '@/components/Icons';
 
@@ -26,9 +27,16 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [username, setUsername] = useState('');
+  
+  // UI용 현재 페이지 상태 - 서버 응답과 관련 없이 순수하게 UI 상태만 관리
+  const [currentPage, setCurrentPage] = useState(1);
+  
+  // 트윗 목록 갱신 플래그 - 공강 호출을 방지하기 위해 사용
+  const [refreshFlag, setRefreshFlag] = useState(0);
 
-  // 트윗 데이터 가져오기
-  const fetchTweets = async (page: number) => {
+  // 트윗 데이터 가져오기 - useCallback 사용하여 초기화 시에만 생성
+  const fetchTweets = useCallback(async (page: number) => {
+    console.log(`[페이지 ${page}] 트윗 가져오기 시작`);
     try {
       setLoading(true);
       const response = await fetch(`/api/tweets?page=${page}`);
@@ -38,15 +46,21 @@ export default function Home() {
       }
       
       const data = await response.json();
+      console.log(`[페이지 ${page}] 트윗 데이터 받음:`, data.tweets.length);
+      
       setTweets(data.tweets);
-      setPagination(data.pagination);
+      setPagination(prev => ({
+        ...data.pagination,
+        // 화면에 표시되는 페이지를 업데이트하지 않고 리스트만 갱신
+        page: prev.page
+      }));
     } catch (error) {
       console.error('트윗 로딩 오류:', error);
       setError('트윗을 불러오는데 문제가 발생했습니다. 다시 시도해주세요.');
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   // 사용자 정보 가져오기
   const fetchUserInfo = async () => {
@@ -75,10 +89,32 @@ export default function Home() {
     }
   };
 
+  // 페이지 변경 핸들러
+  const goToPage = (pageNumber: number) => {
+    console.log(`페이지 변경: ${pageNumber}`);
+    setCurrentPage(pageNumber);
+    // refreshFlag를 증가시켜 트윗 목록 갱신 유도
+    setRefreshFlag(prev => prev + 1);
+  };
+  
+  // 트윗 생성 후 호출될 함수
+  const handleTweetCreated = useCallback(() => {
+    console.log('트윗 생성됨, 목록 새로고침');
+    // 항상 1페이지로 돌아감
+    setCurrentPage(1);
+    // refreshFlag를 증가시켜 목록 갱신
+    setRefreshFlag(prev => prev + 1);
+  }, []);
+
+  // 페이지 로드 시 초기 데이터 로드
   useEffect(() => {
-    fetchTweets(1);
     fetchUserInfo();
   }, []);
+
+  // refreshFlag가 변경되거나 currentPage가 변경될 때만 트윗 가져오기
+  useEffect(() => {
+    fetchTweets(currentPage);
+  }, [currentPage, refreshFlag, fetchTweets]);
 
   if (loading && tweets.length === 0) {
     return (
@@ -137,8 +173,11 @@ export default function Home() {
           </div>
         </div>
 
-        {/* 트윗 작성 폼 */}
-        <AddTweet />
+        {/* 현재 로그인한 사용자인 경우에만 트윗 작성 폼 표시 */}
+        {/* 트윗 작성 컴포넌트 (직접 API를 호출하는 버전 사용) */}
+        {username && (
+          <AddTweetDirect onTweetCreated={handleTweetCreated} />
+        )}
 
         {tweets.length === 0 ? (
           <div className="text-center py-10 bg-white rounded-lg border border-gray-200">
@@ -154,22 +193,22 @@ export default function Home() {
 
             {/* 페이지네이션 */}
             <div className="mt-8 flex justify-between items-center">
-              <Button 
-                onClick={goToPrevPage} 
-                disabled={pagination.page <= 1}
-                className={pagination.page <= 1 ? 'opacity-50 cursor-not-allowed' : ''}
+              <Button
+                onClick={() => goToPage(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="py-2 px-4 !w-auto"
               >
                 ← 이전
               </Button>
               
               <div className="text-gray-600 w-1/2 text-center">
-                페이지 {pagination.page} / {pagination.totalPages || 1}
+                페이지 {currentPage} / {pagination.totalPages || 1}
               </div>
               
-              <Button 
-                onClick={goToNextPage} 
-                disabled={pagination.isLastPage}
-                className={pagination.isLastPage ? 'opacity-50 cursor-not-allowed' : ''}
+              <Button
+                onClick={() => goToPage(currentPage + 1)}
+                disabled={currentPage >= pagination.totalPages}
+                className="py-2 px-4 !w-auto"
               >
                 다음 →
               </Button>

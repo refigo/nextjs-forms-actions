@@ -43,6 +43,56 @@ export const db = {
     create: async (args: any) => {
       const prisma = await getPrismaClient();
       return prisma.tweet.create(args);
+    },
+    update: async (args: any) => {
+      const prisma = await getPrismaClient();
+      return prisma.tweet.update(args);
+    },
+    delete: async (args: any) => {
+      const prisma = await getPrismaClient();
+      return prisma.tweet.delete(args);
+    }
+  },
+  // Like 모델 추가
+  like: {
+    findUnique: async (args: any) => {
+      const prisma = await getPrismaClient();
+      return prisma.like.findUnique(args);
+    },
+    findMany: async (args: any) => {
+      const prisma = await getPrismaClient();
+      return prisma.like.findMany(args);
+    },
+    create: async (args: any) => {
+      const prisma = await getPrismaClient();
+      return prisma.like.create(args);
+    },
+    delete: async (args: any) => {
+      const prisma = await getPrismaClient();
+      return prisma.like.delete(args);
+    }
+  },
+  // Response 모델 추가
+  response: {
+    findUnique: async (args: any) => {
+      const prisma = await getPrismaClient();
+      return prisma.response.findUnique(args);
+    },
+    findMany: async (args: any) => {
+      const prisma = await getPrismaClient();
+      return prisma.response.findMany(args);
+    },
+    create: async (args: any) => {
+      const prisma = await getPrismaClient();
+      return prisma.response.create(args);
+    },
+    update: async (args: any) => {
+      const prisma = await getPrismaClient();
+      return prisma.response.update(args);
+    },
+    delete: async (args: any) => {
+      const prisma = await getPrismaClient();
+      return prisma.response.delete(args);
     }
   }
 };

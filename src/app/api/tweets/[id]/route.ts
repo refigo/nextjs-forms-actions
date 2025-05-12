@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/db';
-// Force Prisma client initialization for Vercel deployment
-import '@/lib/prisma';
+// Direct import of prisma client (server action safe)
+import { prisma } from '@/../../prisma/client';
 import { getSession } from '@/lib/session';
 
 // Next.js 15에서는 API 라우트 핸들러 정의
@@ -31,7 +30,7 @@ export async function GET(request: NextRequest) {
     }
     
     // 트윗 조회 (사용자 정보 포함)
-    const tweet = await db.tweet.findUnique({
+    const tweet = await prisma.tweet.findUnique({
       where: { id: tweetId },
       include: {
         user: {
@@ -60,7 +59,7 @@ export async function GET(request: NextRequest) {
     console.log('트윗 찾음:', tweet);
 
     // 현재 사용자가 좋아요를 눌렀는지 확인
-    const like = await db.like.findUnique({
+    const like = await prisma.like.findUnique({
       where: {
         userId_tweetId: {
           userId: session.userId!,
@@ -70,7 +69,7 @@ export async function GET(request: NextRequest) {
     });
 
     // 트윗에 대한 답글 조회
-    const responses = await db.response.findMany({
+    const responses = await prisma.response.findMany({
       where: {
         tweetId: tweetId
       },

@@ -1,8 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getSession } from '@/lib/session';
-import { db } from '@/lib/db';
-// Force Prisma client initialization for Vercel deployment
-import '@/lib/prisma';
+// Direct import of prisma client (server action safe)
+import { prisma } from '@/../../prisma/client';
 
 export async function GET() {
   try {
@@ -17,7 +16,7 @@ export async function GET() {
     }
 
     // Check if we're using the mock Prisma client (where findUnique will return null)
-    const user = await db.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { id: session.userId },
       select: {
         id: true,

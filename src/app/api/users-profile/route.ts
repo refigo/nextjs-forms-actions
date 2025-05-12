@@ -1,6 +1,5 @@
-import { db } from '@/lib/db';
-// Force Prisma client initialization for Vercel deployment
-import '@/lib/prisma';
+// Direct import of prisma client (server action safe)
+import { prisma } from '@/../../prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
 
 // 사용자명으로 프로필 조회 API - ?username=xxx 형식으로 변경
@@ -21,7 +20,7 @@ export async function GET(request: NextRequest) {
     }
 
     // 사용자 정보 가져오기 (비밀번호 제외)
-    const user = await db.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { username },
       select: {
         id: true,
@@ -40,7 +39,7 @@ export async function GET(request: NextRequest) {
     }
 
     // 사용자의 트윗 가져오기
-    const tweets = await db.tweet.findMany({
+    const tweets = await prisma.tweet.findMany({
       where: {
         userId: user.id
       },
@@ -66,7 +65,7 @@ export async function GET(request: NextRequest) {
     });
 
     // 총 트윗 수 계산
-    const totalTweets = await db.tweet.count({
+    const totalTweets = await prisma.tweet.count({
       where: {
         userId: user.id
       }

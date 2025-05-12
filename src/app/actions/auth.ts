@@ -2,7 +2,8 @@
 
 // import { redirect } from 'next/navigation';
 import { z } from 'zod';
-import { db } from '@/lib/db';
+// Direct import of prisma client (server action safe)
+import { prisma } from '@/../../prisma/client';
 import { hashPassword, verifyPassword } from '@/lib/password';
 import { setSession, logout } from '@/lib/session';
 
@@ -102,7 +103,7 @@ export async function signupAction(prevState: SignupFormState, formData: FormDat
     }
 
     // Check if the email is already in use
-    const existingUserByEmail = await db.user.findUnique({
+    const existingUserByEmail = await prisma.user.findUnique({
       where: { email: validatedFields.data.email },
     });
 
@@ -116,7 +117,7 @@ export async function signupAction(prevState: SignupFormState, formData: FormDat
     }
 
     // Check if the username is already in use
-    const existingUserByUsername = await db.user.findUnique({
+    const existingUserByUsername = await prisma.user.findUnique({
       where: { username: validatedFields.data.username },
     });
 
@@ -133,7 +134,7 @@ export async function signupAction(prevState: SignupFormState, formData: FormDat
     const hashedPassword = await hashPassword(validatedFields.data.password);
 
     // Create the user in the database
-    const user = await db.user.create({
+    const user = await prisma.user.create({
       data: {
         email: validatedFields.data.email,
         username: validatedFields.data.username,
@@ -201,7 +202,7 @@ export async function loginAction(prevState: LoginFormState, formData: FormData)
     }
 
     // Find user with the given email
-    const user = await db.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: {
         email: validatedFields.data.email,
       },

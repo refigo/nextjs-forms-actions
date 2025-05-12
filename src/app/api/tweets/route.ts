@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/db';
-// Force Prisma client initialization for Vercel deployment
-import '@/lib/prisma';
+// Direct import of prisma client (server action safe)
+import { prisma } from '@/../../prisma/client';
 import { getSession } from '@/lib/session';
 import { z } from 'zod';
 
@@ -33,14 +32,14 @@ export async function GET(request: NextRequest) {
     }
 
     // 트윗 수 계산 (페이지네이션을 위함)
-    const totalTweets = await db.tweet.count();
+    const totalTweets = await prisma.tweet.count();
     const totalPages = Math.ceil(totalTweets / TWEETS_PER_PAGE);
     
     // 마지막 페이지 확인
     const isLastPage = page >= totalPages;
     
     // 트윗 조회 (최신순, 사용자 정보 포함)
-    const tweets = await db.tweet.findMany({
+    const tweets = await prisma.tweet.findMany({
       take: TWEETS_PER_PAGE,
       skip: (page - 1) * TWEETS_PER_PAGE,
       orderBy: {
@@ -110,7 +109,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 트윗 생성
-    const tweet = await db.tweet.create({
+    const tweet = await prisma.tweet.create({
       data: {
         tweet: validationResult.data.tweet,
         userId: session.userId

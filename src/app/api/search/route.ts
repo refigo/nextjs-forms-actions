@@ -1,6 +1,5 @@
-import { db } from '@/lib/db';
-// Force Prisma client initialization for Vercel deployment
-import '@/lib/prisma';
+// Direct import of prisma client (server action safe)
+import { prisma } from '@/../../prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
@@ -22,7 +21,7 @@ export async function GET(request: NextRequest) {
     }
 
     // 트윗 검색 쿼리 실행 (내용에 키워드 포함)
-    const tweets = await db.tweet.findMany({
+    const tweets = await prisma.tweet.findMany({
       where: {
         tweet: {
           contains: query
@@ -50,7 +49,7 @@ export async function GET(request: NextRequest) {
     });
 
     // 전체 결과 수 계산
-    const totalCount = await db.tweet.count({
+    const totalCount = await prisma.tweet.count({
       where: {
         tweet: {
           contains: query

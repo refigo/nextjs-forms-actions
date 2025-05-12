@@ -1,17 +1,16 @@
 import { NextResponse } from 'next/server';
-import { db } from '@/lib/db';
-// Force Prisma client initialization for Vercel deployment
-import '@/lib/prisma';
+// Direct import of prisma client (server action safe)
+import { prisma } from '@/../../prisma/client';
 
 export async function POST() {
   try {
     // Clean up existing data
-    await db.like.deleteMany({});
-    await db.tweet.deleteMany({});
-    await db.user.deleteMany({});
+    await prisma.like.deleteMany({});
+    await prisma.tweet.deleteMany({});
+    await prisma.user.deleteMany({});
 
     // Create sample users
-    const user1 = await db.user.create({
+    const user1 = await prisma.user.create({
       data: {
         username: 'user1',
         email: 'user1@zod.com',
@@ -20,7 +19,7 @@ export async function POST() {
       },
     });
 
-    const user2 = await db.user.create({
+    const user2 = await prisma.user.create({
       data: {
         username: 'user2',
         email: 'user2@zod.com',
@@ -30,21 +29,21 @@ export async function POST() {
     });
 
     // Create sample tweets
-    const tweet1 = await db.tweet.create({
+    const tweet1 = await prisma.tweet.create({
       data: {
         tweet: '안녕하세요! 이것은 첫 번째 트윗입니다.',
         userId: user1.id,
       },
     });
 
-    const tweet2 = await db.tweet.create({
+    const tweet2 = await prisma.tweet.create({
       data: {
         tweet: '반갑습니다! 두 번째 트윗입니다.',
         userId: user1.id,
       },
     });
 
-    const tweet3 = await db.tweet.create({
+    const tweet3 = await prisma.tweet.create({
       data: {
         tweet: '안녕하세요! user2의 첫 번째 트윗입니다.',
         userId: user2.id,
@@ -52,14 +51,14 @@ export async function POST() {
     });
 
     // Create sample likes
-    const like1 = await db.like.create({
+    const like1 = await prisma.like.create({
       data: {
         userId: user2.id,
         tweetId: tweet1.id,
       },
     });
 
-    const like2 = await db.like.create({
+    const like2 = await prisma.like.create({
       data: {
         userId: user1.id,
         tweetId: tweet3.id,
@@ -86,6 +85,6 @@ export async function POST() {
     );
   } finally {
     // Disconnect from the database to prevent connection pool issues
-    await db.$disconnect();
+    await prisma.$disconnect();
   }
 }

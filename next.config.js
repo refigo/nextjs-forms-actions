@@ -48,14 +48,8 @@ const nextConfig = {
     return config;
   },
   
-  // SWC 경고 억제 설정
-  swcMinify: true,
-  experimental: {
-    // SWC 컴파일러 옵션
-    swcPlugins: [
-      ['next-superjson-plugin', {}]
-    ],
-  }
+  // Next.js 15.3.1에서는 기본적으로 SWC 미니파이어가 활성화되어 있음
+  // experimental 옵션은 필요한 경우에만 추가
 };
 
 module.exports = nextConfig;

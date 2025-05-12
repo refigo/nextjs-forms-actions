@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getSession } from '@/lib/session';
-// 싱글톤 패턴의 Prisma 클라이언트 사용
-import { prisma } from '@/lib/prisma-client';
+// 노마드코더 방식의 Prisma 클라이언트 사용
+import db from '@/lib/db';
 
 export async function GET() {
   try {
@@ -15,11 +15,10 @@ export async function GET() {
       );
     }
 
-    // 싱글톤 패턴으로 수정된 prisma 클라이언트 사용
-    // 이미 초기화되어 있으므로 따로 초기화할 필요 없음
+    // 노마드코더 방식의 db 클라이언트 사용
     
     // 사용자 정보 조회
-    const user = await prisma.user.findUnique({
+    const user = await db.user.findUnique({
       where: { id: session.userId },
       select: {
         id: true,

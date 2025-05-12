@@ -1,11 +1,10 @@
 import { NextResponse } from 'next/server';
-// 비동기 초기화 패턴으로 변경
-import { getPrismaClient } from '@/lib/prisma-client';
+// 단순 방식으로 prisma 사용
+import { prisma } from '@/lib/prisma-client';
 
 export async function POST() {
   try {
-    // 비동기적으로 Prisma 클라이언트 초기화
-    const prisma = await getPrismaClient();
+    // prisma 객체 사용 - 이미 초기화되어 있음
     
     // Clean up existing data
     await prisma.like.deleteMany({});

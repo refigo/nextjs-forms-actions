@@ -1,5 +1,5 @@
-// 비동기 초기화 패턴으로 변경
-import { getPrismaClient } from '@/lib/prisma-client';
+// 단순하게 prisma 객체 사용
+import { prisma } from '@/lib/prisma-client';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
@@ -20,8 +20,7 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // 비동기적으로 Prisma 클라이언트 초기화
-    const prisma = await getPrismaClient();
+    // prisma 객체는 이미 초기화되어 있어 추가 코드 필요 없음
     
     // 트윗 검색 쿼리 실행 (내용에 키워드 포함)
     const tweets = await prisma.tweet.findMany({

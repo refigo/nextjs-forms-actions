@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-// 비동기 초기화 패턴으로 변경
-import { getPrismaClient } from '@/lib/prisma-client';
+// 가장 단순한 형태로 prisma 사용
+import { prisma } from '@/lib/prisma-client';
 import { getSession } from '@/lib/session';
 import { z } from 'zod';
 
@@ -31,8 +31,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // 비동기적으로 Prisma 클라이언트 초기화
-    const prisma = await getPrismaClient();
+    // 단순히 prisma 객체 사용 - 이미 초기화되어 있음
     
     // 트윗 수 계산 (페이지네이션을 위함)
     const totalTweets = await prisma.tweet.count();
@@ -111,8 +110,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 비동기적으로 Prisma 클라이언트 초기화
-    const prisma = await getPrismaClient();
+    // 단순히 prisma 객체 사용 - 이미 초기화되어 있음
     
     // 트윗 생성
     const tweet = await prisma.tweet.create({

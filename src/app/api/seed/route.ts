@@ -1,9 +1,12 @@
 import { NextResponse } from 'next/server';
-// Import from stable singleton implementation
-import { prisma } from '@/lib/prisma-singleton';
+// 비동기 초기화 패턴으로 변경
+import { getPrismaClient } from '@/lib/prisma-client';
 
 export async function POST() {
   try {
+    // 비동기적으로 Prisma 클라이언트 초기화
+    const prisma = await getPrismaClient();
+    
     // Clean up existing data
     await prisma.like.deleteMany({});
     await prisma.tweet.deleteMany({});

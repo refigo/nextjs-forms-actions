@@ -1,5 +1,5 @@
-// Import from stable singleton implementation
-import { prisma } from '@/lib/prisma-singleton';
+// 비동기 초기화 패턴으로 변경
+import { getPrismaClient } from '@/lib/prisma-client';
 import { NextRequest, NextResponse } from 'next/server';
 
 // 사용자명으로 프로필 조회 API - ?username=xxx 형식으로 변경
@@ -14,10 +14,13 @@ export async function GET(request: NextRequest) {
     // 사용자명이 없는 경우
     if (!username) {
       return NextResponse.json(
-        { error: '사용자명이 필요합니다.' },
+        { error: 'Username is required' },
         { status: 400 }
       );
     }
+
+    // 비동기적으로 Prisma 클라이언트 초기화
+    const prisma = await getPrismaClient();
 
     // 사용자 정보 가져오기 (비밀번호 제외)
     const user = await prisma.user.findUnique({

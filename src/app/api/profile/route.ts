@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getSession } from '@/lib/session';
-// Import from stable singleton implementation
-import { prisma } from '@/lib/prisma-singleton';
+// 비동기 초기화 패턴으로 변경
+import { getPrismaClient } from '@/lib/prisma-client';
 
 export async function GET() {
   try {
@@ -15,7 +15,10 @@ export async function GET() {
       );
     }
 
-    // Check if we're using the mock Prisma client (where findUnique will return null)
+    // 비동기적으로 Prisma 클라이언트 초기화
+    const prisma = await getPrismaClient();
+    
+    // 사용자 정보 조회
     const user = await prisma.user.findUnique({
       where: { id: session.userId },
       select: {

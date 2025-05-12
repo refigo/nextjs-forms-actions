@@ -219,7 +219,7 @@ export default function UserProfilePage() {
             </div>
             
             <div className="flex-1">
-              <h2 className="text-2xl font-semibold mb-1">{user.username}</h2>
+              <h2 className="text-2xl font-semibold mb-1 text-gray-800">{user.username}</h2>
               <p className="text-gray-600 mb-2">{user.email}</p>
               
               {user.bio ? (
@@ -237,7 +237,7 @@ export default function UserProfilePage() {
         
         {/* 트윗 목록 */}
         <div className="mb-6 flex justify-between items-center">
-          <h2 className="text-xl font-semibold">작성한 트윗 ({profileData.totalTweets})</h2>
+          <h2 className="text-xl font-semibold text-gray-800">작성한 트윗 ({profileData.totalTweets})</h2>
         </div>
         
         {tweets.length > 0 ? (

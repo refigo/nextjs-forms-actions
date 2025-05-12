@@ -265,7 +265,7 @@ export default function EditProfilePage() {
                 name="bio"
                 rows={4}
                 defaultValue={currentUser?.bio ?? ''}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-gray-800 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
               />
               {state.errors?.bio && (
                 <p className="mt-1.5 text-sm text-red-600">{state.errors.bio}</p>

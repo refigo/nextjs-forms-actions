@@ -2,8 +2,8 @@
 
 // import { redirect } from 'next/navigation';
 import { z } from 'zod';
-// 비동기 초기화 패턴으로 변경
-import { getPrismaClient } from '@/lib/prisma-client';
+// 싱글톤 패턴으로 수정한 prisma 클라이언트 사용
+import { prisma } from '@/lib/prisma-client';
 import { hashPassword, verifyPassword } from '@/lib/password';
 import { setSession, logout } from '@/lib/session';
 
@@ -102,8 +102,8 @@ export async function signupAction(prevState: SignupFormState, formData: FormDat
       };
     }
 
-    // 비동기적으로 Prisma 클라이언트 초기화
-    const prisma = await getPrismaClient();
+    // 싱글톤 패턴으로 수정된 prisma 클라이언트 사용
+    // 이미 초기화되어 있으므로 따로 초기화할 필요 없음
 
     // Check if the email is already in use
     const existingUserByEmail = await prisma.user.findUnique({
@@ -204,8 +204,8 @@ export async function loginAction(prevState: LoginFormState, formData: FormData)
       };
     }
 
-    // 비동기적으로 Prisma 클라이언트 초기화
-    const prisma = await getPrismaClient();
+    // 싱글톤 패턴으로 수정된 prisma 클라이언트 사용
+    // 이미 초기화되어 있으므로 따로 초기화할 필요 없음
     
     // Find user with the given email
     const user = await prisma.user.findUnique({

@@ -39,8 +39,8 @@ export default function EditProfilePage() {
   // useOptimistic 후크 사용 (변경된 React API에 맞춰 수정)
   const [optimisticUser, setOptimisticUser] = useOptimistic<User | null>(null);
   
-  // 폼 액션 상태
-  const [state, formAction] = useActionState<ProfileFormState, FormData>(
+  // 서버 액션 연결
+  const [state, _formAction] = useActionState<ProfileFormState, FormData>(
     updateProfileAction,
     { errors: {}, success: false, message: '' }
   );
@@ -107,9 +107,10 @@ export default function EditProfilePage() {
           throw new Error('다른 사용자의 프로필을 수정할 수 없습니다.');
         }
         
-        // 사용자 프로필 정보 가져오기
+        // 사용자 프로필 정보 가져오기 - 새 API 경로 사용
         console.log('사용자 프로필 정보 요청 중...');
-        const response = await fetch(`/api/users/${username}`);
+        // 새로운 API 엔드포인트 사용 (이전 /api/users/{username} 대신)
+        const response = await fetch(`/api/users-profile?username=${encodeURIComponent(username)}`);
         
         if (!response.ok) {
           if (response.status === 404) {
@@ -144,6 +145,7 @@ export default function EditProfilePage() {
     };
     
     loadUserData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [username]);
 
   // 현재 화면에 표시할 사용자 데이터 (낙관적 업데이트가 없으면 기본 사용자 데이터 사용)

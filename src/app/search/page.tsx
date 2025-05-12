@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect, FormEvent } from 'react';
+import { useState, useEffect, FormEvent, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import TweetCard, { TweetWithUser } from '@/components/TweetCard';
 import Button from '@/components/Button';
-import Input from '@/components/Input';
+// Input 컴포넌트는 사용하지 않으므로 제거
 
 interface SearchResults {
   tweets: TweetWithUser[];
@@ -13,7 +13,8 @@ interface SearchResults {
   limit: number;
 }
 
-export default function SearchPage() {
+// 실제 검색 기능을 구현하는 컴포넌트
+function SearchContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const initialQuery = searchParams.get('q') || '';
@@ -78,6 +79,7 @@ export default function SearchPage() {
     if (initialQuery) {
       executeSearch(initialQuery, initialPage);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // 페이지네이션 컴포넌트
@@ -185,5 +187,14 @@ export default function SearchPage() {
       </div>
     </div>
   </main>
+  );
+}
+
+// 주요 컴포넌트를 Suspense로 감싸서 export
+export default function SearchPage() {
+  return (
+    <Suspense fallback={<div className="p-4 text-center">Loading search...</div>}>
+      <SearchContent />
+    </Suspense>
   );
 }

@@ -83,6 +83,9 @@ Prisma.NullTypes = {
  * Enums
  */
 exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
+  ReadUncommitted: 'ReadUncommitted',
+  ReadCommitted: 'ReadCommitted',
+  RepeatableRead: 'RepeatableRead',
   Serializable: 'Serializable'
 });
 
@@ -125,6 +128,11 @@ exports.Prisma.SortOrder = {
   desc: 'desc'
 };
 
+exports.Prisma.QueryMode = {
+  default: 'default',
+  insensitive: 'insensitive'
+};
+
 exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
@@ -159,6 +167,10 @@ const config = {
         "fromEnvVar": null,
         "value": "darwin",
         "native": true
+      },
+      {
+        "fromEnvVar": null,
+        "value": "rhel-openssl-3.0.x"
       }
     ],
     "previewFeatures": [],
@@ -175,17 +187,18 @@ const config = {
   "datasourceNames": [
     "db"
   ],
-  "activeProvider": "sqlite",
+  "activeProvider": "postgresql",
+  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {
         "fromEnvVar": "DATABASE_URL",
-        "value": "file:./dev.db"
+        "value": null
       }
     }
   },
-  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"../src/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"sqlite\"\n  url      = env(\"DATABASE_URL\")\n}\n\n// User model with required fields\nmodel User {\n  id        String   @id @default(uuid())\n  username  String   @unique\n  password  String\n  email     String   @unique\n  bio       String?\n  createdAt DateTime @default(now()) @map(\"created_at\")\n  updatedAt DateTime @updatedAt @map(\"updated_at\")\n\n  // Relations\n  tweets    Tweet[]\n  likes     Like[]\n  responses Response[]\n\n  @@map(\"users\")\n}\n\n// Tweet model with required fields\nmodel Tweet {\n  id        String   @id @default(uuid())\n  tweet     String\n  createdAt DateTime @default(now()) @map(\"created_at\")\n  updatedAt DateTime @updatedAt @map(\"updated_at\")\n\n  // User relation\n  userId String @map(\"user_id\")\n  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  // Tweet likes\n  likes Like[]\n\n  // Tweet responses\n  responses Response[]\n\n  @@index([userId])\n  @@map(\"tweets\")\n}\n\n// Like model with required fields\nmodel Like {\n  id        String   @id @default(uuid())\n  createdAt DateTime @default(now()) @map(\"created_at\")\n\n  // User relation\n  userId String @map(\"user_id\")\n  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  // Tweet relation\n  tweetId String @map(\"tweet_id\")\n  tweet   Tweet  @relation(fields: [tweetId], references: [id], onDelete: Cascade)\n\n  @@unique([userId, tweetId])\n  @@index([userId])\n  @@index([tweetId])\n  @@map(\"likes\")\n}\n\n// Response model for tweet replies\nmodel Response {\n  id        String   @id @default(uuid())\n  text      String\n  createdAt DateTime @default(now()) @map(\"created_at\")\n  updatedAt DateTime @updatedAt @map(\"updated_at\")\n\n  // User relation\n  userId String @map(\"user_id\")\n  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  // Tweet relation\n  tweetId String @map(\"tweet_id\")\n  tweet   Tweet  @relation(fields: [tweetId], references: [id], onDelete: Cascade)\n\n  @@index([userId])\n  @@index([tweetId])\n  @@map(\"responses\")\n}\n",
-  "inlineSchemaHash": "3c6d66865de6a4ebb0290b21e52799baa2e4219a3dcc1d750ba6d4ca07639376",
+  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\ngenerator client {\n  provider      = \"prisma-client-js\"\n  output        = \"../src/generated/prisma\"\n  binaryTargets = [\"native\", \"rhel-openssl-3.0.x\"]\n}\n\n// prisma/schema.prisma\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\n// User model with required fields\nmodel User {\n  id        String   @id @default(uuid())\n  username  String   @unique\n  password  String\n  email     String   @unique\n  bio       String?\n  createdAt DateTime @default(now()) @map(\"created_at\")\n  updatedAt DateTime @updatedAt @map(\"updated_at\")\n\n  // Relations\n  tweets    Tweet[]\n  likes     Like[]\n  responses Response[]\n\n  @@map(\"users\")\n}\n\n// Tweet model with required fields\nmodel Tweet {\n  id        String   @id @default(uuid())\n  tweet     String\n  createdAt DateTime @default(now()) @map(\"created_at\")\n  updatedAt DateTime @updatedAt @map(\"updated_at\")\n\n  // User relation\n  userId String @map(\"user_id\")\n  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  // Tweet likes\n  likes Like[]\n\n  // Tweet responses\n  responses Response[]\n\n  @@index([userId])\n  @@map(\"tweets\")\n}\n\n// Like model with required fields\nmodel Like {\n  id        String   @id @default(uuid())\n  createdAt DateTime @default(now()) @map(\"created_at\")\n\n  // User relation\n  userId String @map(\"user_id\")\n  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  // Tweet relation\n  tweetId String @map(\"tweet_id\")\n  tweet   Tweet  @relation(fields: [tweetId], references: [id], onDelete: Cascade)\n\n  @@unique([userId, tweetId])\n  @@index([userId])\n  @@index([tweetId])\n  @@map(\"likes\")\n}\n\n// Response model for tweet replies\nmodel Response {\n  id        String   @id @default(uuid())\n  text      String\n  createdAt DateTime @default(now()) @map(\"created_at\")\n  updatedAt DateTime @updatedAt @map(\"updated_at\")\n\n  // User relation\n  userId String @map(\"user_id\")\n  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  // Tweet relation\n  tweetId String @map(\"tweet_id\")\n  tweet   Tweet  @relation(fields: [tweetId], references: [id], onDelete: Cascade)\n\n  @@index([userId])\n  @@index([tweetId])\n  @@map(\"responses\")\n}\n",
+  "inlineSchemaHash": "baacf0133342d4f9d6ac89150057561a6af7b3405ec98efeaa31350c72314d4c",
   "copyEngine": true
 }
 config.dirname = '/'

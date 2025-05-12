@@ -157,7 +157,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/Users/refigo/github-repository/nextjs-forms-actions/src/generated/prisma",
+      "value": "/Users/refigo/github-repository/nextjs-forms-actions/.prisma/client",
       "fromEnvVar": null
     },
     "config": {
@@ -179,10 +179,10 @@ const config = {
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
-    "rootEnvPath": null,
-    "schemaEnvPath": "../../../.env"
+    "rootEnvPath": "../../.env",
+    "schemaEnvPath": "../../.env"
   },
-  "relativePath": "../../../prisma",
+  "relativePath": "../../prisma",
   "clientVersion": "6.6.0",
   "engineVersion": "f676762280b54cd07c770017ed3711ddde35f37a",
   "datasourceNames": [
@@ -198,8 +198,8 @@ const config = {
       }
     }
   },
-  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\ngenerator client {\n  provider      = \"prisma-client-js\"\n  output        = \"../src/generated/prisma\"\n  binaryTargets = [\"native\", \"rhel-openssl-3.0.x\"]\n}\n\n// prisma/schema.prisma\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\n// User model with required fields\nmodel User {\n  id        String   @id @default(uuid())\n  username  String   @unique\n  password  String\n  email     String   @unique\n  bio       String?\n  createdAt DateTime @default(now()) @map(\"created_at\")\n  updatedAt DateTime @updatedAt @map(\"updated_at\")\n\n  // Relations\n  tweets    Tweet[]\n  likes     Like[]\n  responses Response[]\n\n  @@map(\"users\")\n}\n\n// Tweet model with required fields\nmodel Tweet {\n  id        String   @id @default(uuid())\n  tweet     String\n  createdAt DateTime @default(now()) @map(\"created_at\")\n  updatedAt DateTime @updatedAt @map(\"updated_at\")\n\n  // User relation\n  userId String @map(\"user_id\")\n  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  // Tweet likes\n  likes Like[]\n\n  // Tweet responses\n  responses Response[]\n\n  @@index([userId])\n  @@map(\"tweets\")\n}\n\n// Like model with required fields\nmodel Like {\n  id        String   @id @default(uuid())\n  createdAt DateTime @default(now()) @map(\"created_at\")\n\n  // User relation\n  userId String @map(\"user_id\")\n  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  // Tweet relation\n  tweetId String @map(\"tweet_id\")\n  tweet   Tweet  @relation(fields: [tweetId], references: [id], onDelete: Cascade)\n\n  @@unique([userId, tweetId])\n  @@index([userId])\n  @@index([tweetId])\n  @@map(\"likes\")\n}\n\n// Response model for tweet replies\nmodel Response {\n  id        String   @id @default(uuid())\n  text      String\n  createdAt DateTime @default(now()) @map(\"created_at\")\n  updatedAt DateTime @updatedAt @map(\"updated_at\")\n\n  // User relation\n  userId String @map(\"user_id\")\n  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  // Tweet relation\n  tweetId String @map(\"tweet_id\")\n  tweet   Tweet  @relation(fields: [tweetId], references: [id], onDelete: Cascade)\n\n  @@index([userId])\n  @@index([tweetId])\n  @@map(\"responses\")\n}\n",
-  "inlineSchemaHash": "baacf0133342d4f9d6ac89150057561a6af7b3405ec98efeaa31350c72314d4c",
+  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\ngenerator client {\n  provider      = \"prisma-client-js\"\n  output        = \"../.prisma/client\"\n  binaryTargets = [\"native\", \"rhel-openssl-3.0.x\"]\n}\n\n// prisma/schema.prisma\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\n// User model with required fields\nmodel User {\n  id        String   @id @default(uuid())\n  username  String   @unique\n  password  String\n  email     String   @unique\n  bio       String?\n  createdAt DateTime @default(now()) @map(\"created_at\")\n  updatedAt DateTime @updatedAt @map(\"updated_at\")\n\n  // Relations\n  tweets    Tweet[]\n  likes     Like[]\n  responses Response[]\n\n  @@map(\"users\")\n}\n\n// Tweet model with required fields\nmodel Tweet {\n  id        String   @id @default(uuid())\n  tweet     String\n  createdAt DateTime @default(now()) @map(\"created_at\")\n  updatedAt DateTime @updatedAt @map(\"updated_at\")\n\n  // User relation\n  userId String @map(\"user_id\")\n  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  // Tweet likes\n  likes Like[]\n\n  // Tweet responses\n  responses Response[]\n\n  @@index([userId])\n  @@map(\"tweets\")\n}\n\n// Like model with required fields\nmodel Like {\n  id        String   @id @default(uuid())\n  createdAt DateTime @default(now()) @map(\"created_at\")\n\n  // User relation\n  userId String @map(\"user_id\")\n  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  // Tweet relation\n  tweetId String @map(\"tweet_id\")\n  tweet   Tweet  @relation(fields: [tweetId], references: [id], onDelete: Cascade)\n\n  @@unique([userId, tweetId])\n  @@index([userId])\n  @@index([tweetId])\n  @@map(\"likes\")\n}\n\n// Response model for tweet replies\nmodel Response {\n  id        String   @id @default(uuid())\n  text      String\n  createdAt DateTime @default(now()) @map(\"created_at\")\n  updatedAt DateTime @updatedAt @map(\"updated_at\")\n\n  // User relation\n  userId String @map(\"user_id\")\n  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  // Tweet relation\n  tweetId String @map(\"tweet_id\")\n  tweet   Tweet  @relation(fields: [tweetId], references: [id], onDelete: Cascade)\n\n  @@index([userId])\n  @@index([tweetId])\n  @@map(\"responses\")\n}\n",
+  "inlineSchemaHash": "ed1626cd6a2b5017ef7f6779d6fa61c0696eb72aefd0d49677f6ca31d7db8b95",
   "copyEngine": true
 }
 
@@ -208,8 +208,8 @@ const fs = require('fs')
 config.dirname = __dirname
 if (!fs.existsSync(path.join(__dirname, 'schema.prisma'))) {
   const alternativePaths = [
-    "src/generated/prisma",
-    "generated/prisma",
+    ".prisma/client",
+    "client",
   ]
   
   const alternativePath = alternativePaths.find((altPath) => {
@@ -239,11 +239,11 @@ Object.assign(exports, Prisma)
 
 // file annotations for bundling tools to include these files
 path.join(__dirname, "libquery_engine-darwin.dylib.node");
-path.join(process.cwd(), "src/generated/prisma/libquery_engine-darwin.dylib.node")
+path.join(process.cwd(), ".prisma/client/libquery_engine-darwin.dylib.node")
 
 // file annotations for bundling tools to include these files
 path.join(__dirname, "libquery_engine-rhel-openssl-3.0.x.so.node");
-path.join(process.cwd(), "src/generated/prisma/libquery_engine-rhel-openssl-3.0.x.so.node")
+path.join(process.cwd(), ".prisma/client/libquery_engine-rhel-openssl-3.0.x.so.node")
 // file annotations for bundling tools to include these files
 path.join(__dirname, "schema.prisma");
-path.join(process.cwd(), "src/generated/prisma/schema.prisma")
+path.join(process.cwd(), ".prisma/client/schema.prisma")

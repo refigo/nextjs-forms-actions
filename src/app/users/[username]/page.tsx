@@ -39,13 +39,14 @@ export default function UserProfilePage() {
   const [isCurrentUser, setIsCurrentUser] = useState(false);
   const [currentPage, setCurrentPage] = useState(page);
 
-  // 유저 데이터 로드
+  // 유저 데이터 로드 - 새로운 API 엔드포인트 사용
   const loadUserData = async (username: string, page: number = 1) => {
     setLoading(true);
     setError('');
 
     try {
-      const res = await fetch(`/api/users/${username}?page=${page}&limit=10`);
+      // 새로운 API 엔드포인트 사용
+      const res = await fetch(`/api/users-profile?username=${encodeURIComponent(username)}&page=${page}&limit=10`);
       
       if (!res.ok) {
         if (res.status === 404) {
@@ -101,6 +102,7 @@ export default function UserProfilePage() {
     if (username) {
       loadUserData(username, page);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [username]);
 
   // 페이지네이션 컴포넌트

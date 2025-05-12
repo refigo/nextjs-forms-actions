@@ -82,14 +82,7 @@ export default function AddTweet({ onTweetCreated }: AddTweetProps) {
     // formData에 트윗 내용 설정
     formData.set('tweet', tweetText);
     
-    // 서버 액션 호출 전 상태 초기화
-    // (useActionState의 불변성 문제로 초기 상태로 돌리기 위해 새로운 객체 생성)
-    const resetState = {
-      ...initialState,
-      success: false,
-      message: '',
-      error: ''
-    };
+    // 서버 액션 호출
     
     // 서버 액션 호출
     const result = formAction(formData);

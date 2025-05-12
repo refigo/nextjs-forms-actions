@@ -70,20 +70,20 @@ export default function Home() {
       if (data.isLoggedIn && data.username) {
         setUsername(data.username);
       }
-    } catch (error) {
-      console.error('사용자 정보 로딩 오류:', error);
+    } catch (_error) {
+      console.error('사용자 정보 로딩 오류:', _error);
     }
   };
 
   // 다음 페이지로 이동
-  const goToNextPage = () => {
+  const _goToNextPage = () => {
     if (!pagination.isLastPage) {
       fetchTweets(pagination.page + 1);
     }
   };
 
   // 이전 페이지로 이동
-  const goToPrevPage = () => {
+  const _goToPrevPage = () => {
     if (pagination.page > 1) {
       fetchTweets(pagination.page - 1);
     }

@@ -22,6 +22,10 @@ export const db = {
       const prisma = await getPrismaClient();
       return prisma.user.findMany(args);
     },
+    findFirst: async (args: any) => {
+      const prisma = await getPrismaClient();
+      return prisma.user.findFirst(args);
+    },
     create: async (args: any) => {
       const prisma = await getPrismaClient();
       return prisma.user.create(args);
@@ -29,6 +33,10 @@ export const db = {
     update: async (args: any) => {
       const prisma = await getPrismaClient();
       return prisma.user.update(args);
+    },
+    delete: async (args: any) => {
+      const prisma = await getPrismaClient();
+      return prisma.user.delete(args);
     }
   },
   tweet: {

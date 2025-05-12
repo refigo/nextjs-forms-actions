@@ -38,12 +38,29 @@ export default function CreateAccountPage() {
   };
 
   const [state, formAction] = useActionState(signupAction, initialState);
+  
+  // 사용자 입력값을 관리하기 위한 상태 추가
+  const [formValues, setFormValues] = useState({
+    email: state.values?.email || '',
+    username: state.values?.username || '',
+    password: ''
+  });
+  
   const [clientErrors, setClientErrors] = useState<{
     email?: string;
     username?: string;
     password?: string;
     bio?: string;
   }>({});
+  
+  // 입력값 변경 핸들러
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormValues(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
 
   // Use useEffect for navigation after successful signup
   useEffect(() => {
@@ -57,11 +74,8 @@ export default function CreateAccountPage() {
     // Reset client errors
     setClientErrors({});
     
-    // Get form elements
-    const form = event.currentTarget;
-    const emailInput = form.elements.namedItem('email') as HTMLInputElement;
-    const usernameInput = form.elements.namedItem('username') as HTMLInputElement;
-    const passwordInput = form.elements.namedItem('password') as HTMLInputElement;
+    // 현재 상태의 값을 사용하여 유효성 검사
+    const { email, username, password } = formValues;
     
     // Validate each field
     let hasErrors = false;
@@ -73,31 +87,31 @@ export default function CreateAccountPage() {
     } = {};
     
     // Email validation
-    if (!emailInput.value.trim()) {
+    if (!email.trim()) {
       errors.email = '이메일을 입력해주세요.';
       hasErrors = true;
-    } else if (!emailInput.value.trim().endsWith('@zod.com')) {
+    } else if (!email.trim().endsWith('@zod.com')) {
       errors.email = '오직 @zod.com 도메인의 이메일만 허용됩니다.';
       hasErrors = true;
     }
     
     // Username validation
-    if (!usernameInput.value.trim()) {
+    if (!username.trim()) {
       errors.username = '사용자 이름을 입력해주세요.';
       hasErrors = true;
-    } else if (usernameInput.value.trim().length < 5) {
+    } else if (username.trim().length < 5) {
       errors.username = '사용자 이름은 최소 5글자 이상이어야 합니다.';
       hasErrors = true;
     }
     
     // Password validation
-    if (!passwordInput.value.trim()) {
+    if (!password.trim()) {
       errors.password = '비밀번호를 입력해주세요.';
       hasErrors = true;
-    } else if (passwordInput.value.trim().length < 10) {
+    } else if (password.trim().length < 10) {
       errors.password = '비밀번호는 최소 10글자 이상이어야 합니다.';
       hasErrors = true;
-    } else if (!/(?=.*\d)/.test(passwordInput.value)) {
+    } else if (!/(?=.*\d)/.test(password)) {
       errors.password = '비밀번호는 최소 1개 이상의 숫자를 포함해야 합니다.';
       hasErrors = true;
     }
@@ -109,9 +123,18 @@ export default function CreateAccountPage() {
     }
   };
 
+  // 폼 액션 재정의 - formData에 현재 값을 설정
+  const handleFormAction = (formData: FormData) => {
+    // 현재 값을 formData에 설정
+    formData.set('email', formValues.email);
+    formData.set('username', formValues.username);
+    formData.set('password', formValues.password);
+    return formAction(formData);
+  };
+
   return (
     <FormContainer title="계정 만들기">
-      <form action={formAction} onSubmit={validateAndSubmit} className="mt-8 space-y-6" noValidate>
+      <form action={handleFormAction} onSubmit={validateAndSubmit} className="mt-8 space-y-6" noValidate>
         {state.message && !state.success && (
           <div className="p-3 rounded-md bg-red-100 text-red-800">
             {state.message}
@@ -125,7 +148,8 @@ export default function CreateAccountPage() {
             placeholder="Email (@zod.com)" 
             icon={<EmailIcon />}
             error={clientErrors.email || state.errors?.email}
-            value={state.values?.email}
+            value={formValues.email}
+            onChange={handleInputChange}
             required
             disabled={useFormStatus().pending}
           />
@@ -140,7 +164,8 @@ export default function CreateAccountPage() {
             placeholder="Username (5+ characters)" 
             icon={<UserIcon />}
             error={clientErrors.username || state.errors?.username}
-            value={state.values?.username}
+            value={formValues.username}
+            onChange={handleInputChange}
             required
             disabled={useFormStatus().pending}
           />
@@ -156,6 +181,8 @@ export default function CreateAccountPage() {
             placeholder="Password (10+ characters with a number)" 
             icon={<LockIcon />}
             error={clientErrors.password || state.errors?.password}
+            value={formValues.password}
+            onChange={handleInputChange}
             required
             disabled={useFormStatus().pending}
           />

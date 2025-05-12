@@ -45,21 +45,39 @@ export default function EditProfilePage() {
     { errors: {}, success: false, message: '' }
   );
   
-  // 폼 제출 핸들러 (낙관적 UI 업데이트 포함)
-  const handleSubmit = (formData: FormData) => {
-    // 유저 정보가 없는 경우
-    if (!optimisticUser) return;
+  // 폼 액션 호출과 낙관적 업데이트를 처리하는 함수
+  async function handleSubmit(formData: FormData) {
+    // 현재 유저 정보가 있는 경우에만 낙관적 업데이트 적용
+    if (currentUser) {
+      // 낙관적 업데이트를 위한 새 유저 정보 객체 생성
+      const updatedUser = { ...currentUser };
+      updatedUser.username = formData.get('username') as string;
+      updatedUser.email = formData.get('email') as string;
+      updatedUser.bio = formData.get('bio') as string;
+      
+      // 낙관적 업데이트 적용
+      startTransition(() => {
+        setOptimisticUser(updatedUser);
+      });
+    }
     
-    // 낙관적 업데이트를 위한 새 유저 정보 객체 생성
-    const updatedUser = { ...optimisticUser };
-    updatedUser.username = formData.get('username') as string;
-    updatedUser.email = formData.get('email') as string;
-    updatedUser.bio = formData.get('bio') as string;
-    
-    // 폼 액션 내에서는 setOptimisticUser 자동으로 적용됨 (별도의 호출 불필요)
-    // 폼 액션 호출
-    return formAction(formData);
-  };
+    // 서버 액션 호출 및 결과 받기
+    try {
+      // prevState를 첫 번째 인자로 전달해야 함
+      const result = await updateProfileAction(state, formData);
+      console.log('프로필 업데이트 결과:', result);
+      
+      if (result.success) {
+        // 성공 시 리디렉션 (1.5초 후)
+        setTimeout(() => {
+          const newUsername = formData.get('username') as string || username;
+          router.push(`/users/${newUsername}`);
+        }, 150);
+      }
+    } catch (error) {
+      console.error('프로필 업데이트 오류:', error);
+    }
+  }
   
   // 유저 데이터 로드 - 세션 확인 및 프로필 정보 가져오기
   useEffect(() => {
@@ -128,16 +146,8 @@ export default function EditProfilePage() {
     loadUserData();
   }, [username]);
 
-  // 성공 시 리디렉션
-  useEffect(() => {
-    if (state.success) {
-      // 새 사용자명으로 리디렉션(변경된 경우)
-      const newUsername = optimisticUser?.username || username;
-      setTimeout(() => {
-        router.push(`/users/${newUsername}`);
-      }, 1500);
-    }
-  }, [state.success, optimisticUser, username, router]);
+  // 현재 화면에 표시할 사용자 데이터 (낙관적 업데이트가 없으면 기본 사용자 데이터 사용)
+  const currentUser = optimisticUser || user;
 
   // 로딩 처리
   if (loading) {
@@ -195,9 +205,6 @@ export default function EditProfilePage() {
     );
   }
 
-  // 현재 화면에 표시할 사용자 데이터 (낙관적 업데이트가 없으면 기본 사용자 데이터 사용)
-  const currentUser = optimisticUser || user;
-  
   // 디버깅용 로그
   console.log('Rendering with currentUser:', currentUser);
   

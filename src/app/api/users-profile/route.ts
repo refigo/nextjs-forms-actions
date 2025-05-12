@@ -1,4 +1,6 @@
 import { db } from '@/lib/db';
+// Force Prisma client initialization for Vercel deployment
+import '@/lib/prisma';
 import { NextRequest, NextResponse } from 'next/server';
 
 // 사용자명으로 프로필 조회 API - ?username=xxx 형식으로 변경

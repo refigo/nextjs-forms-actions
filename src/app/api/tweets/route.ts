@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
+// Force Prisma client initialization for Vercel deployment
+import '@/lib/prisma';
 import { getSession } from '@/lib/session';
 import { z } from 'zod';
 

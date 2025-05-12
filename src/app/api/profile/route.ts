@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { getSession } from '@/lib/session';
 import { db } from '@/lib/db';
+// Force Prisma client initialization for Vercel deployment
+import '@/lib/prisma';
 
 export async function GET() {
   try {

@@ -3,7 +3,7 @@
 // import { redirect } from 'next/navigation';
 import { z } from 'zod';
 // 싱글톤 패턴으로 수정한 prisma 클라이언트 사용
-import { prisma } from '@/lib/prisma-client';
+import { prisma } from '@/lib/prisma-singleton';
 import { hashPassword, verifyPassword } from '@/lib/password';
 import { setSession, logout } from '@/lib/session';
 

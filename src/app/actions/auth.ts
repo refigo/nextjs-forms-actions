@@ -2,10 +2,14 @@
 
 // import { redirect } from 'next/navigation';
 import { z } from 'zod';
-// 싱글톤 패턴으로 수정한 prisma 클라이언트 사용
-import { prisma } from '@/lib/prisma-singleton';
+// Prisma 클라이언트는 함수 내부에서 가져오도록 수정
+// import { prisma } from '@/lib/prisma-singleton';
 import { hashPassword, verifyPassword } from '@/lib/password';
 import { setSession, logout } from '@/lib/session';
+
+// Next.js 15.3에서는 서버 액션에서 동적 로딩이 필요
+// 정적 생성 비활성화
+export const dynamic = 'force-dynamic';
 
 // Common form state interface
 export interface AuthFormState {
@@ -72,6 +76,9 @@ const loginSchema = z.object({
 
 // Sign-up action
 export async function signupAction(prevState: SignupFormState, formData: FormData): Promise<SignupFormState> {
+  // Next.js 15.3에서는 함수 내부에서 Prisma 클라이언트를 동적으로 가져오는 것이 권장됨
+  const { prisma } = await import('@/lib/prisma-singleton');
+  
   // Reset the state
   const state: SignupFormState = {
     success: false,
@@ -178,6 +185,9 @@ export async function signupAction(prevState: SignupFormState, formData: FormDat
 
 // Login action
 export async function loginAction(prevState: LoginFormState, formData: FormData): Promise<LoginFormState> {
+  // Next.js 15.3에서는 함수 내부에서 Prisma 클라이언트를 동적으로 가져오는 것이 권장됨
+  const { prisma } = await import('@/lib/prisma-singleton');
+  
   // Reset the state
   const state: LoginFormState = {
     success: false,

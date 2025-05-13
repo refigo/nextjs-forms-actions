@@ -1,9 +1,11 @@
 import { PrismaClient } from '../generated/prisma';
 
 // This is to prevent multiple instances of Prisma Client in development
+/* eslint-disable no-var */
 declare global {
   var prisma: PrismaClient | undefined;
 }
+/* eslint-enable no-var */
 
 // Initialize PrismaClient
 const prismaClientSingleton = () => {

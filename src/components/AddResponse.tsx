@@ -122,7 +122,7 @@ export default function AddResponse({ tweetId, onSuccess, onOptimisticResponse }
           <textarea
             name="text"
             placeholder="답글을 입력하세요..."
-            className="w-full border border-gray-300 rounded-lg p-3 h-20 resize-none focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+            className="text-black w-full border border-gray-300 rounded-lg p-3 h-20 resize-none focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
             maxLength={280}
             onChange={handleTextChange}
             value={responseText}

@@ -100,7 +100,7 @@ export default function LoginPage() {
             placeholder="Email" 
             icon={<EmailIcon />}
             error={clientErrors.email || state.errors?.email}
-            value={state.values?.email}
+            defaultValue={state.values?.email}
             required
             disabled={useFormStatus().pending}
           />

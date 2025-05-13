@@ -1,6 +1,9 @@
-// 노마드코더 방식으로 구현된 db 객체 사용
-import { prisma } from '@/lib/db';
 import { NextRequest, NextResponse } from 'next/server';
+// Import prisma but don't use it at module scope
+import { prisma } from '@/lib/db';
+
+// Prevent static prerendering during build
+export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
   try {

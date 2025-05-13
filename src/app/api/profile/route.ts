@@ -1,7 +1,10 @@
 import { NextResponse } from 'next/server';
 import { getSession } from '@/lib/session';
-// 노마드코더 방식으로 구현된 db 객체 사용
+// Import prisma but don't use it at module scope
 import { prisma } from '@/lib/db';
+
+// Prevent static prerendering during build
+export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
@@ -15,7 +18,8 @@ export async function GET() {
       );
     }
 
-    // 노마드코더 방식으로 구현된 prisma 객체 사용
+    // 싱글톤 패턴으로 수정된 prisma 클라이언트 사용
+    // 이미 초기화되어 있으므로 따로 초기화할 필요 없음
     
     // 사용자 정보 조회
     const user = await prisma.user.findUnique({

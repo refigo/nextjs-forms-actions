@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 // 단순하게 prisma 객체 사용
-import { prisma } from '@/lib/prisma-client';
+// import { prisma } from '@/lib/prisma-client';
 import { getSession } from '@/lib/session';
 
 // Next.js 15에서는 API 라우트 핸들러 정의
@@ -9,6 +9,7 @@ export async function GET(request: NextRequest) {
   const pathParts = request.url.split('/');
   const tweetId = pathParts[pathParts.length - 1] || '';
   try {
+    const { prisma } = await import('@/lib/db');
     // 로그인 확인
     const session = await getSession();
     if (!session.isLoggedIn) {

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 // 가장 단순한 형태로 prisma 사용
-import { prisma } from '@/lib/prisma-client';
+// import { prisma } from '@/lib/prisma-client';
 import { getSession } from '@/lib/session';
 import { z } from 'zod';
 
@@ -10,6 +10,7 @@ const TWEETS_PER_PAGE = 10;
 // Next.js 15 표준 타입 명시 (파라미터 없는 경우에도 명시적으로 타입 선언)
 export async function GET(request: NextRequest) {
   try {
+    const { prisma } = await import('@/lib/db');
     // 로그인 확인
     const session = await getSession();
     if (!session.isLoggedIn) {
@@ -88,6 +89,7 @@ const tweetSchema = z.object({
 // 트윗 생성 API
 export async function POST(request: NextRequest) {
   try {
+    const { prisma } = await import('@/lib/db');
     // 로그인 확인
     const session = await getSession();
     if (!session.isLoggedIn || !session.userId) {

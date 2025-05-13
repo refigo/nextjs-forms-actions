@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server';
 // 단순 방식으로 prisma 사용
-import { prisma } from '@/lib/prisma-client';
+// import { prisma } from '@/lib/prisma-client';
 
 export async function POST() {
   try {
+    const { prisma } = await import('@/lib/db');
     // prisma 객체 사용 - 이미 초기화되어 있음
     
     // Clean up existing data

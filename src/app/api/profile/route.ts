@@ -1,13 +1,15 @@
 import { NextResponse } from 'next/server';
 import { getSession } from '@/lib/session';
 // Import prisma but don't use it at module scope
-import { prisma } from '@/lib/db';
+// import { prisma } from '@/lib/db';
 
 // Prevent static prerendering during build
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
+    const { prisma } = await import('@/lib/db');
+
     const session = await getSession();
     
     // If user is not logged in

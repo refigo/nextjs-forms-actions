@@ -1,12 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 // Import prisma but don't use it at module scope
-import { prisma } from '@/lib/db';
+// import { prisma } from '@/lib/db';
 
 // Prevent static prerendering during build
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
   try {
+    const { prisma } = await import('@/lib/db');
+    
     const { searchParams } = new URL(request.url);
     const query = searchParams.get('q') || '';
     const page = parseInt(searchParams.get('page') || '1');

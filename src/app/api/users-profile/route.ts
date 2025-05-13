@@ -1,10 +1,11 @@
 // 단순히 prisma 객체 사용
-import { prisma } from '@/lib/prisma-client';
+// import { prisma } from '@/lib/prisma-client';
 import { NextRequest, NextResponse } from 'next/server';
 
 // 사용자명으로 프로필 조회 API - ?username=xxx 형식으로 변경
 export async function GET(request: NextRequest) {
   try {
+    const { prisma } = await import('@/lib/db');
     const { searchParams } = new URL(request.url);
     const username = searchParams.get('username');
     const page = parseInt(searchParams.get('page') || '1');

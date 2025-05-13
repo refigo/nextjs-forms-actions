@@ -1,5 +1,8 @@
 'use client';
 
+// 정적 생성 비활성화 - Next.js 15.3.2 빌드 오류 해결
+export const dynamic = 'force-dynamic';
+
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Button from '@/components/Button';

@@ -1,19 +1,21 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // 기본 설정
-  reactStrictMode: true,
+  reactStrictMode: false,
   
-  // 접근성 경고 억제 - 빌드 및 개발 시 모두 적용
+  // 오류 무시 설정
   eslint: {
-    // 빌드 시 ESLint 경고 무시
     ignoreDuringBuilds: true,
   },
-  
-  // 빌드 시 타입 체크 비활성화
   typescript: {
-    // 빌드 시 타입 오류 무시
     ignoreBuildErrors: true,
   },
+  
+  // 서버리스 환경에 적합한 설정
+  output: 'standalone',
+  
+  // Prisma 관련 설정
+  serverExternalPackages: ['@prisma/client'],
   
   // Webpack 설정을 통해 특정 경고 메시지를 필터링
   webpack: (config, { dev, isServer }) => {
